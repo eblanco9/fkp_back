@@ -1,0 +1,43 @@
+name: Deploy FKP PROD
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY_PROD }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H 63.178.113.71 >> ~/.ssh/known_hosts
+        shell: bash
+
+      - name: Stop PM2 process
+        run: |
+          ssh -i ~/.ssh/id_rsa bitnami@63.178.113.71 "pm2 stop ws_fkp || true"
+        shell: bash
+
+      - name: Sync files with Rsync
+        run: |
+          rsync -avz --exclude 'node_modules' -e "ssh -i ~/.ssh/id_rsa" ./ bitnami@63.178.113.71:/home/bitnami/node-app
+        shell: bash
+
+      - name: Install dependencies & restart app
+        run: |
+          ssh -i ~/.ssh/id_rsa bitnami@63.178.113.71 << 'EOF'
+            cd /home/bitnami/node-app
+            npm install sharp --force --include=optional --os=linux --cpu=x64 
+            npm run generate:all
+            pm2 start ws_firebots
+          EOF
+        shell: bash
