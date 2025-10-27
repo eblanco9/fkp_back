@@ -25,24 +25,48 @@ model Usuario {
   email String
   celular String
   estado Estado @default(NONE)
+
+  historial Historial[]
 }
 
-model UsuarioAntiguo {
-  id       Int    @id @default(autoincrement())
-  nombre   String
-  apellido String
-  fecha_de_nacimiento DateTime
-  numero_documento Int @unique
-  domicilio String
-  email String
-  celular String
-  estado Estado @default(NONE)
+enum enum_users_documentType {
+  nationalId
+
+}
+
+model UsersOriginal {
+  id                  String                  @id @default(uuid())
+  documentNumber      String                  @unique
+  documentType        enum_users_documentType  @default(nationalId)
+  email               String? 
+  firstName           String?
+  lastName            String?
+  birthDate           DateTime?
+  gender              String?
+  maritalStatus       String?
+  address             String?
+  cellphone           String?
+  whatsapp            Boolean?                @default(false)
+  wants_to_buy        Boolean?                @default(false)
+  has_differences     Boolean?                @default(false)
+  differences         String?
+  origin              String?
+  documentFrontImage  String?
+  documentBackImage   String?
+  status              Estado?                 @default(PENDING)
+  createdAt           DateTime                @default(now())
+  updatedAt           DateTime                @updatedAt
+
+  @@map("users_original")
 }
 
 model Historial {
   id Int @id @default(autoincrement())
+  usuario_afectado_id Int 
   titulo String
   motivo String
   fecha_de_creacion DateTime @default(now())
+
+  usuario_afectado Usuario? @relation(fields: [usuario_afectado_id], references: [id])
 }
 

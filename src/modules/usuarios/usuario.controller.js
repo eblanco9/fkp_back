@@ -5,6 +5,7 @@ import {
 } from './usuario.schema.js';
 
 
+
 const obtenerUsuarioAntiguo = async (req, res, next) => {
     try {
         const id_usuario = req.params.id_usuario;
@@ -67,12 +68,35 @@ const rechazarUsuario = async (req, res, next) => {
 };
 
 const crearUsuario = async (req, res, next) => {
+    const compensations = [];
     try {
         const body = crearUsuarioSchema.body.parse(req.body);
-        const result = await usuarioService.crearUsuario(body);
+        const files = crearUsuarioSchema.files.parse(req.files);
+        //agrego las imagenes al usuario
+        const result_imagen_dni_frente = await usuarioService.agregarImagenAUnUsuario(files.dni_frente[0],body.numero_documento)
+        compensations.push(() => usuarioService.eliminarImagenDeUnUsuario(result_imagen_dni_frente.key) )
+        const result_imagen_dni_dorso = await usuarioService.agregarImagenAUnUsuario(files.dni_dorso[0],body.numero_documento)
+        compensations.push(() => usuarioService.eliminarImagenDeUnUsuario(result_imagen_dni_dorso.key) )
+
+        console.log(files)
+        //creo el usuario en la db
+        //falta agregar las url de las imagenes
+        const usuario_creado = await usuarioService.crearUsuario(body);
+        // // un poco innecesario
+        // compensations.push(() => usuarioService.eliminarUsuario(usuario_creado.numero_documento))
         // registrar en el historial?
-        res.json(result);
+        res.json(usuario_creado);
     } catch (err) {
+        //si falla alguna de las acciones, se ejecutan las compensaciones (como un rollback)
+        //a futuro crear una funcion para esto
+        try {
+            for (const compensation of compensations.reverse()){
+                await compensation();
+            }
+        } catch (error) {
+            console.log(error)
+        }
+
         next(err);
     }
 };

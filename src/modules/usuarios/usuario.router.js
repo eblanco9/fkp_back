@@ -9,29 +9,35 @@ import {
     crearUsuarioSchema
 } from './usuario.schema.js';
 import { validateRequest } from '../../middleware/validateRequestHandle.js';
+import historialRouter from '../historial/historial.router.js'
+import multer from "multer";
+
+const upload = multer({
+    storage: multer.memoryStorage(), // o donde guardes los archivos temporalmente
+    limits: { fileSize: 5 * 1024 * 1024 }, // ejemplo: 5MB máximo
+});
 
 const router = Router();
 
 router.get(
-    '/obtener-usuario-antiguo/:id_usuario',
+    '/antiguo/:id_usuario',
     validateRequest(obtenerUsuarioAntiguoSchema),
     usuarioController.obtenerUsuarioAntiguo
 );
 router.get(
-    '/obtener-usuario-nuevo/:id_usuario', 
+    '/nuevo/:id_usuario', 
     validateRequest(obtenerUsuarioNuevoSchema),
     usuarioController.obtenerUsuarioNuevo
 );
 
 router.get(
-    '/obtener-usuarios',
+    '/',
     validateRequest(obtenerUsuariosSchema), 
     usuarioController.obtenerUsuarios
 );
 
 router.get(
-    '/obtener-cantidad-de-usuarios-segun-estado', 
-    validateRequest(aprobarUsuarioSchema),
+    '/cantidad-de-usuarios-segun-estado', 
     usuarioController.obtenerCantidadDeUsuariosSegunEstado
 )
 
@@ -48,9 +54,15 @@ router.post('/rechazar-usuario/:id_usuario',
 
 router.post(
     '/crear-usuario', 
+    upload.fields([
+        { name: "dni_frente", maxCount: 1 },
+        { name: "dni_dorso", maxCount: 1 },
+    ]),
     validateRequest(crearUsuarioSchema),
     usuarioController.crearUsuario
 );
+
+router.use('/:id_usuario/historial', historialRouter)
 
 
 export default router;

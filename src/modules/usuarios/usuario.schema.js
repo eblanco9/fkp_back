@@ -119,4 +119,31 @@ export const crearUsuarioSchema = {
     email: z.email({ error: "El email es requerido" }),
     celular: z.string({ error: "El celular es requerido" }),
   }),
+  files: z.object({
+    dni_frente: z
+      .array(z.any(), { error: "Debe enviar una foto de dni frente" })
+      .min(1, 'Debe enviar una foto de dni frente')
+      .max(1, 'Solo se permite una foto de dni frente')
+      .refine(
+        (arr) => arr.every(f => ['image/jpeg', 'image/png', 'image/webp'].includes(f.mimetype)),
+        { message: 'Formato de dni frente no válido' } // aquí ya sabes que es foto_perfil
+      )
+      .refine(
+        (arr) => arr.every(f => f.size <= 5 * 1024 * 1024),
+        { message: 'dni frente no puede superar 5MB' } // aquí ya sabes que es documento_identidad
+      ),
+    dni_dorso: z
+      .array(z.any(),{ error: "Debe enviar una foto de dni dorso" })
+      .min(1, 'Debe enviar una foto de dni dorso')
+      .max(1, 'Solo se permite una foto de dni dorso')
+      .refine(
+        (arr) => arr.every(f => ['image/jpeg', 'image/png', 'image/webp'].includes(f.mimetype)),
+        { message: 'Formato de dni dorso no válido' } // aquí ya sabes que es foto_perfil
+      )
+      .refine(
+        (arr) => arr.every(f => f.size <= 5 * 1024 * 1024),
+        { message: 'dni dorso no puede superar 5MB' } // aquí ya sabes que es documento_identidad
+      ),
+  }),
 }
+

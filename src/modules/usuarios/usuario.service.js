@@ -1,6 +1,7 @@
 import HttpError from '../../errors/httpError.js';
 import prisma from '../../prisma-client.js';
-
+import s3Service from '../../services/s3.service.js';
+import { obtenerExtensionArchivo } from '../../utils/archivo.js';
 
 const obtenerUsuarioAntiguo = async (id_usuario) => {
     const usuario = await prisma.usuarioAntiguo.findUnique({
@@ -25,7 +26,23 @@ const obtenerUsuarioNuevo = async (id_usuario) => {
     if(!usuario){
         throw new HttpError(404, "No se encontro el usuario");
     }
-    return usuario
+
+    //buscar las imagenes del usuario
+    const imagenes = await s3Service.getFilesToS3('usuarios', id_usuario)
+    console.log(imagenes)
+    const {id, ...resto_usuario} = usuario
+    const response = {
+        ...resto_usuario,
+        imagenes: imagenes.map(imagen => {
+            return {
+                key: imagen.key,
+                name: imagen.name,
+                url: imagen.url
+            }
+        })
+
+    }
+    return response
 }
 
 const obtenerUsuarios = async (query) => {
@@ -141,6 +158,30 @@ const crearUsuario = async (usuario) => {
     })
     return usuarioCreado
 }
+
+const eliminarUsuario = async (id_usuario) => {
+    await prisma.usuario.delete({
+        where: {
+            numero_documento: Number(id_usuario)
+        }
+    })
+}
+const agregarImagenAUnUsuario = async(file,nro_documento) => {
+    const tipo_de_archivo = obtenerExtensionArchivo(file)
+    const nombre_archivo_dni_frente = `${file.fieldname}.${tipo_de_archivo}`
+    await s3Service.uploadToS3(
+        file.buffer,
+        nombre_archivo_dni_frente,
+        file.mimetype,
+        'usuarios',
+        nro_documento
+    ) 
+};
+
+const eliminarImagenDeUnUsuario = async(key_imagen) => {
+    await s3Service.deleteFromS3(key_imagen)
+}
+
 export default {
     obtenerUsuarioAntiguo,
     obtenerUsuarioNuevo,
@@ -148,5 +189,8 @@ export default {
     obtenerCantidadDeUsuariosSegunEstado,
     aprobarUsuario,
     rechazarUsuario,
-    crearUsuario
+    crearUsuario,
+    eliminarUsuario,
+    agregarImagenAUnUsuario,
+    eliminarImagenDeUnUsuario
 };

@@ -40,6 +40,23 @@ export function validateRequest(schema) {
       }
     }
 
+    if (schema.files) {
+      const result = schema.files.safeParse(req.files);
+      if (!result.success) {
+        console.log(result.error.issues)
+        const errorsMessage = result.error.issues.map((issue) => {
+
+          // issue.path[0] normalmente contendrá el nombre del campo del archivo
+          const campo = issue.path?.[0] ?? "archivo";
+          return `${campo}: ${issue.message}`;
+        });
+        return res.status(400).json({
+          message: "Validation error in files",
+          errors: errorsMessage,
+        });
+      }
+    }
+
     next();
   };
 }

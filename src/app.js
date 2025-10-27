@@ -1,6 +1,7 @@
 import express from 'express';
 import { errorHandler } from './middleware/errorHandle.js';
 import usuarioRouter from './modules/usuarios/usuario.router.js';
+import historialRouter from './modules/historial/historial.router.js';
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/usuarios', usuarioRouter);
+// app.use('/api/historial',historialRouter)
 
 //error handle
 app.use(errorHandler);
