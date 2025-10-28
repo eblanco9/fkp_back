@@ -81,7 +81,7 @@ const crearUsuario = async (req, res, next) => {
         console.log(files)
         //creo el usuario en la db
         //falta agregar las url de las imagenes
-        const usuario_creado = await usuarioService.crearUsuario(body);
+        const usuario_creado = await usuarioService.crearUsuario(body,result_imagen_dni_dorso.url,result_imagen_dni_frente.url);
         // // un poco innecesario
         // compensations.push(() => usuarioService.eliminarUsuario(usuario_creado.numero_documento))
         // registrar en el historial?
@@ -91,7 +91,9 @@ const crearUsuario = async (req, res, next) => {
         //a futuro crear una funcion para esto
         try {
             for (const compensation of compensations.reverse()){
+                console.log("ejecuto compensacion")
                 await compensation();
+                console.log("fin de compensacion")
             }
         } catch (error) {
             console.log(error)

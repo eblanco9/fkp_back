@@ -4,9 +4,9 @@ import s3Service from '../../services/s3.service.js';
 import { obtenerExtensionArchivo } from '../../utils/archivo.js';
 
 const obtenerUsuarioAntiguo = async (id_usuario) => {
-    const usuario = await prisma.usuarioAntiguo.findUnique({
+    const usuario = await prisma.usersOriginal.findUnique({
         where: {
-            numero_documento: Number(id_usuario)
+            documentNumber: id_usuario
         }
     })
 
@@ -17,9 +17,9 @@ const obtenerUsuarioAntiguo = async (id_usuario) => {
 }
 
 const obtenerUsuarioNuevo = async (id_usuario) => {
-    const usuario = await prisma.usuario.findUnique({
+    const usuario = await prisma.users.findUnique({
         where: {
-            numero_documento: Number(id_usuario)
+            documentNumber: id_usuario
         }
     })
 
@@ -27,21 +27,22 @@ const obtenerUsuarioNuevo = async (id_usuario) => {
         throw new HttpError(404, "No se encontro el usuario");
     }
 
-    //buscar las imagenes del usuario
-    const imagenes = await s3Service.getFilesToS3('usuarios', id_usuario)
-    console.log(imagenes)
-    const {id, ...resto_usuario} = usuario
-    const response = {
-        ...resto_usuario,
-        imagenes: imagenes.map(imagen => {
-            return {
-                key: imagen.key,
-                name: imagen.name,
-                url: imagen.url
-            }
-        })
+    // //buscar las imagenes del usuario
+    // const imagenes = await s3Service.getFilesToS3('usuarios', id_usuario)
+    // console.log(imagenes)
+    // const {id, ...resto_usuario} = usuario
+    // const response = {
+    //     ...resto_usuario,
+    //     imagenes: imagenes.map(imagen => {
+    //         return {
+    //             key: imagen.key,
+    //             name: imagen.name,
+    //             url: imagen.url
+    //         }
+    //     })
 
-    }
+    // }
+    const {id, ...response} = usuario
     return response
 }
 
@@ -51,15 +52,15 @@ const obtenerUsuarios = async (query) => {
     const pageNumber = parseInt(page);
     const pageSize = parseInt(limit);
 
-    const usuarios = await prisma.usuario.findMany({
-        where: estado ? { estado: estado } : {}, // filtrar por estado si viene
+    const usuarios = await prisma.users.findMany({
+        where: estado ? { status: estado } : {}, // filtrar por estado si viene
         skip: (pageNumber - 1) * pageSize,
         take: pageSize,
         orderBy: { id: "desc" } 
     });
 
-    const total = await prisma.usuario.count({
-        where: estado ? { estado: estado } : {}
+    const total = await prisma.users.count({
+        where: estado ? { status: estado } : {}
     });
 
     return {
@@ -72,21 +73,15 @@ const obtenerUsuarios = async (query) => {
 }
 
 const obtenerCantidadDeUsuariosSegunEstado = async () => {
-    const grouped = await prisma.usuario.groupBy({
+    const grouped = await prisma.users.groupBy({
         by: ['estado'],
         _count: { _all: true },
-        having: {
-            estado: {
-                notIn: ["NONE"]
-            }
-        }
     });
     if(grouped.length === 0){
         return {
-            "NONE": 0,
-            "APPROVE": 0,
-            "REJECT": 0,
-            "PENDING": 0
+            "approved": 0,
+            "rejected": 0,
+            "pending": 0
         }
     }
 
@@ -99,12 +94,12 @@ const obtenerCantidadDeUsuariosSegunEstado = async () => {
 
 const aprobarUsuario = async (id_usuario) => {
     const usuario = await obtenerUsuarioNuevo(id_usuario)
-    const usuarioActualizado = await prisma.usuario.update({
+    const usuarioActualizado = await prisma.users.update({
       where: {
-        numero_id: Number(usuario.numero_id)
+        documentNumber: id_usuario
       },
       data: {
-        estado: "APPROVE"
+        status: "approved"
       }
     })
     return usuarioActualizado
@@ -112,18 +107,18 @@ const aprobarUsuario = async (id_usuario) => {
 
 const rechazarUsuario = async (id_usuario) => {
     const usuario = await obtenerUsuarioNuevo(id_usuario)
-    const usuarioActualizado = await prisma.usuario.update({
+    const usuarioActualizado = await prisma.users.update({
       where: {
-        numero_id: Number(usuario.numero_id)
+        documentNumber: id_usuario
       },
       data: {
-        estado: "REJECT"
+        status: "rejected"
       }
     })
     return usuarioActualizado
 }
 
-const crearUsuario = async (usuario) => {
+const crearUsuario = async (usuario,documentBackImage,documentFrontImage) => {
     const {
         nombre,
         apellido,
@@ -131,12 +126,19 @@ const crearUsuario = async (usuario) => {
         numero_documento,
         domicilio,
         email,
-        celular
+        celular,
+        gender,
+        maritalStatus,
+        whatsapp,
+        wants_to_buy,
+
     } = usuario
 
-    const usuarioExistente = await prisma.usuario.findUnique({
+
+
+    const usuarioExistente = await prisma.users.findUnique({
         where: {
-            numero_documento: Number(numero_documento)
+            documentNumber: numero_documento
         }
     })
 
@@ -144,32 +146,38 @@ const crearUsuario = async (usuario) => {
         throw new HttpError(409, "El usuario ya existe");
     }
     
-    const usuarioCreado = await prisma.usuario.create({
+
+    const usuarioCreado = await prisma.users.create({
         data: {
-            nombre,
-            apellido,
-            fecha_de_nacimiento: new Date(fecha_de_nacimiento).toISOString(),
-            numero_documento: Number(numero_documento),
-            domicilio,
+            firstName: nombre,
+            lastName: apellido,
+            birthDate: new Date(fecha_de_nacimiento).toISOString(),
+            documentNumber: numero_documento,
+            address: domicilio,
             email,
-            celular,
-            estado: "PENDING"
+            cellphone: celular,
+            gender,
+            maritalStatus,
+            whatsapp,
+            wants_to_buy,
+            documentFrontImage,
+            documentBackImage
         }
     })
     return usuarioCreado
 }
 
 const eliminarUsuario = async (id_usuario) => {
-    await prisma.usuario.delete({
+    await prisma.users.delete({
         where: {
-            numero_documento: Number(id_usuario)
+            documentNumber: id_usuario
         }
     })
 }
 const agregarImagenAUnUsuario = async(file,nro_documento) => {
     const tipo_de_archivo = obtenerExtensionArchivo(file)
     const nombre_archivo_dni_frente = `${file.fieldname}.${tipo_de_archivo}`
-    await s3Service.uploadToS3(
+    return await s3Service.uploadToS3(
         file.buffer,
         nombre_archivo_dni_frente,
         file.mimetype,

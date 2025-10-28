@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { Gender, MaritalStatus, Estado } from "../../generated/prisma/index.js";
 
 export const obtenerUsuarioAntiguoSchema = {
   params: z.object({
@@ -7,8 +8,7 @@ export const obtenerUsuarioAntiguoSchema = {
       .refine((id) => !isNaN(id), {
         message: (obj) =>
           `El param id_usuario: ${obj?.input} debe ser un string numérico`,
-      })
-      .transform((id) => parseInt(id)),
+      }),
   }),
 };
 
@@ -19,8 +19,7 @@ export const obtenerUsuarioNuevoSchema = {
       .refine((id) => !isNaN(id), {
         message: (obj) =>
           `El param id_usuario: ${obj?.input} debe ser un string numérico`,
-      })
-      .transform((id) => parseInt(id)),
+      }),
   }),
 };
 
@@ -46,13 +45,15 @@ export const obtenerUsuariosSchema = {
       .transform((id) => (id !== undefined ? parseInt(id) : undefined)),
 
     estado: z
-      .string()
+      // .string()
+      .enum(Estado, { message: `La query estado debe ser un estado valido: ${Object.values(Estado).join(", ")}` })
       .optional()
-      .refine(val => val === undefined || ["APPROVE", "PENDING", "REJECT"].includes(val), {
+      // .refine(val => val === undefined || ["APPROVE", "PENDING", "REJECT"].includes(val), {
 
-        message: (obj) =>
-          `La query estado: ${obj?.input} no es un estado valido`,
-      })
+      //   message: (obj) =>
+      //     `La query estado: ${obj?.input} no es un estado valido`,
+      // })
+      
   })
 };
 
@@ -63,8 +64,7 @@ export const aprobarUsuarioSchema = {
       .refine((id) => !isNaN(id), {
         message: (obj) =>
           `El param id_usuario: ${obj?.input} debe ser un string numérico`,
-      })
-      .transform((id) => parseInt(id)),
+      }),
   }),
 };
 
@@ -113,11 +113,21 @@ export const crearUsuarioSchema = {
       .refine((id) => !isNaN(id), {
         message: (obj) =>
           `El numero_documento: ${obj?.input} debe ser un string numérico`,
-      })
-      .transform((id) => parseInt(id)),
+      }),
     domicilio: z.string({ error: "El domicilio es requerido" }),
     email: z.email({ error: "El email es requerido" }),
     celular: z.string({ error: "El celular es requerido" }),
+    gender: z.enum(Gender, { error: `El gender debe ser alguna de las opciones: ${Object.values(Gender).join(", ")}` }),
+    maritalStatus: z.enum(MaritalStatus, { error: `El maritalStatus debe ser alguna de las opciones: ${Object.values(MaritalStatus).join(", ")}` }),
+    whatsapp: z
+      .refine((w) => ["true", "false"].includes(w), {
+        message: (obj) =>
+          `El whatsapp: ${obj?.input} debe ser un string booleano`,
+      })
+      .transform((val) => val === "true"),
+    wants_to_buy: z
+      .enum(["true", "false"], { error: `El wants_to_buy debe ser true o false` })
+      .transform((val) => val === "true"),
   }),
   files: z.object({
     dni_frente: z

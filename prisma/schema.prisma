@@ -9,30 +9,59 @@ datasource db {
 }
 
 enum Estado{
-  NONE
-  PENDING
-  APPROVE
-  REJECT
-}
-
-model Usuario {
-  id       Int    @id @default(autoincrement())
-  nombre   String
-  apellido String
-  fecha_de_nacimiento DateTime
-  numero_documento Int @unique
-  domicilio String
-  email String
-  celular String
-  estado Estado @default(NONE)
-
-  historial Historial[]
+ pending 
+ approved
+ rejected
 }
 
 enum enum_users_documentType {
   nationalId
 
 }
+
+enum Gender {
+  male
+  female
+}
+
+enum MaritalStatus {
+  single
+	married
+  divorced
+	widowed
+  separated
+}
+
+model Users {
+  id                  String                  @id @default(uuid())
+  //campos que viene en el request
+  documentNumber      String                  @unique
+  //puede ser que no este
+  documentType        enum_users_documentType  @default(nationalId)
+  email               String? 
+  firstName           String?
+  lastName            String?
+  birthDate           DateTime?
+  gender              Gender?
+  maritalStatus       MaritalStatus?
+  address             String?
+  cellphone           String?
+  whatsapp            Boolean?                @default(false)
+  wants_to_buy        Boolean?                @default(false)
+  //
+  has_differences     Boolean?                @default(false)
+  differences         String?
+  origin              String?
+  documentFrontImage  String?
+  documentBackImage   String?
+  status              Estado?                 @default(pending)
+  createdAt           DateTime                @default(now())
+  updatedAt           DateTime                @updatedAt
+
+  historial Historial[]
+}
+
+
 
 model UsersOriginal {
   id                  String                  @id @default(uuid())
@@ -42,8 +71,8 @@ model UsersOriginal {
   firstName           String?
   lastName            String?
   birthDate           DateTime?
-  gender              String?
-  maritalStatus       String?
+  gender              Gender?
+  maritalStatus       MaritalStatus?
   address             String?
   cellphone           String?
   whatsapp            Boolean?                @default(false)
@@ -53,7 +82,7 @@ model UsersOriginal {
   origin              String?
   documentFrontImage  String?
   documentBackImage   String?
-  status              Estado?                 @default(PENDING)
+  status              Estado?                 @default(pending)
   createdAt           DateTime                @default(now())
   updatedAt           DateTime                @updatedAt
 
@@ -62,11 +91,11 @@ model UsersOriginal {
 
 model Historial {
   id Int @id @default(autoincrement())
-  usuario_afectado_id Int 
+  usuario_afectado_id String 
   titulo String
   motivo String
   fecha_de_creacion DateTime @default(now())
 
-  usuario_afectado Usuario? @relation(fields: [usuario_afectado_id], references: [id])
+  usuario_afectado Users? @relation(fields: [usuario_afectado_id], references: [id])
 }
 

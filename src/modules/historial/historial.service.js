@@ -4,9 +4,9 @@ import prisma from '../../prisma-client.js';
 
 //seria historial/auditoria
 const obtenerHistorialDeUnUsuario = async (id_usuario) => {
-    const usuario = await prisma.usuario.findUnique({
+    const usuario = await prisma.users.findUnique({
         where: {
-            numero_documento: Number(id_usuario)
+            documentNumber: id_usuario
         },
         include: {
             historial: true
@@ -29,7 +29,7 @@ const agregarHistorialAUnUsuario = async (id_usuario, historial_body) => {
         data: {
             titulo,
             motivo,
-            usuario_afectado_id: Number(id_usuario)
+            usuario_afectado_id: id_usuario
         }
     })
     return historial
