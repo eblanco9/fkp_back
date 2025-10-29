@@ -112,6 +112,20 @@ const rechazarUsuario = async (id_usuario) => {
     return usuarioActualizado
 }
 
+const agregarDiferencias = async (id_usuario, diferencias) => {
+    const usuario = await obtenerUsuarioNuevo(id_usuario)
+    const usuarioActualizado = await prisma.users.update({
+      where: {
+        documentNumber: id_usuario
+      },
+      data: {
+        has_differences: true,
+        differences: diferencias
+      }
+    })
+    return usuarioActualizado
+}
+
 const crearUsuario = async (usuario,documentBackImage,documentFrontImage) => {
     const {
         nombre,
@@ -194,5 +208,6 @@ export default {
     crearUsuario,
     eliminarUsuario,
     agregarImagenAUnUsuario,
-    eliminarImagenDeUnUsuario
+    eliminarImagenDeUnUsuario,
+    agregarDiferencias
 };

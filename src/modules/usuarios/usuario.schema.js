@@ -76,7 +76,6 @@ export const rechazarUsuarioSchema = {
         message: (obj) =>
           `El param id_usuario: ${obj?.input} debe ser un string numérico`,
       })
-      .transform((id) => parseInt(id)),
   }),
   body: z.object({
     motivo: z.string({ error: "El motivo es requerido" }),
@@ -155,3 +154,16 @@ export const crearUsuarioSchema = {
   }),
 }
 
+export const agregarDiferenciasSchema = {
+  params: z.object({
+    id_usuario: z
+      .string()
+      .refine((id) => !isNaN(id), {
+        message: (obj) =>
+          `El param id_usuario: ${obj?.input} debe ser un string numérico`,
+      })
+  }),
+  body: z.object({
+    diferencias: z.string({ error: "Las diferencias son requeridas" }),
+  }),
+}

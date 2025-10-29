@@ -6,7 +6,8 @@ import {
     obtenerUsuariosSchema,
     aprobarUsuarioSchema,
     rechazarUsuarioSchema,
-    crearUsuarioSchema
+    crearUsuarioSchema,
+    agregarDiferenciasSchema
 } from './usuario.schema.js';
 import { validateRequest } from '../../middleware/validateRequestHandle.js';
 import historialRouter from '../historial/historial.router.js'
@@ -69,6 +70,12 @@ router.post('/rechazar-usuario/:id_usuario',
     validateRequest(rechazarUsuarioSchema),
     usuarioController.rechazarUsuario
 );
+
+router.post(
+    '/agregar-diferencias/:id_usuario',
+    validateRequest(agregarDiferenciasSchema),
+    usuarioController.agregarDiferencias
+)
 
 
 router.use('/:id_usuario/historial', historialRouter)

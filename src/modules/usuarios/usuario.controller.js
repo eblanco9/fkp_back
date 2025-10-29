@@ -1,7 +1,8 @@
 import usuarioService from './usuario.service.js';
 import { 
     obtenerUsuariosSchema,
-    crearUsuarioSchema
+    crearUsuarioSchema,
+    agregarDiferenciasSchema
 } from './usuario.schema.js';
 
 
@@ -103,6 +104,17 @@ const crearUsuario = async (req, res, next) => {
     }
 };
 
+const agregarDiferencias = async (req, res, next) => {
+    try {
+        const id_usuario = req.params.id_usuario;
+        const {diferencias} = agregarDiferenciasSchema.body.parse(req.body);
+        const result = await usuarioService.agregarDiferencias(id_usuario,diferencias);
+        res.json(result);
+    } catch (err) {
+        next(err);
+    }
+};
+
 export default {
     obtenerUsuarioAntiguo,
     obtenerUsuarioNuevo,
@@ -110,5 +122,6 @@ export default {
     obtenerCantidadDeUsuariosSegunEstado,
     aprobarUsuario,
     rechazarUsuario,
-    crearUsuario
+    crearUsuario,
+    agregarDiferencias
 };
