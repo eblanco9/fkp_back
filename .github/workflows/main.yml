@@ -27,9 +27,13 @@ jobs:
           ssh -i ~/.ssh/id_rsa bitnami@63.178.113.71 "pm2 stop ws_fkp || true"
         shell: bash
 
-      - name: Sync files with Rsync
+      - name: Sync files with SCP
         run: |
-          rsync -avz --exclude 'node_modules' -e "ssh -i ~/.ssh/id_rsa" ./ bitnami@63.178.113.71:/home/bitnami/node-app
+          scp -i ~/.ssh/id_rsa -r \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            $(ls -A | grep -v node_modules | xargs) \
+            bitnami@63.178.113.71:/home/bitnami/node-app/
         shell: bash
 
       - name: Install dependencies & restart app
