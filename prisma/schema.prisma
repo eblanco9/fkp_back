@@ -4,11 +4,11 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgres"
   url      = env("DATABASE_URL")
 }
 
-enum Estado{
+enum Estado {
  pending 
  approved
  rejected
@@ -19,18 +19,7 @@ enum enum_users_documentType {
 
 }
 
-enum Gender {
-  male
-  female
-}
 
-enum MaritalStatus {
-  single
-	married
-  divorced
-	widowed
-  separated
-}
 
 model Users {
   id                  String                  @id @default(uuid())
@@ -42,8 +31,6 @@ model Users {
   firstName           String?
   lastName            String?
   birthDate           DateTime?
-  gender              Gender?
-  maritalStatus       MaritalStatus?
   address             String?
   cellphone           String?
   whatsapp            Boolean?                @default(false)
@@ -59,6 +46,8 @@ model Users {
   updatedAt           DateTime                @updatedAt
 
   historial Historial[]
+
+  @@map("users")
 }
 
 
@@ -71,8 +60,6 @@ model UsersOriginal {
   firstName           String?
   lastName            String?
   birthDate           DateTime?
-  gender              Gender?
-  maritalStatus       MaritalStatus?
   address             String?
   cellphone           String?
   whatsapp            Boolean?                @default(false)
@@ -97,5 +84,18 @@ model Historial {
   fecha_de_creacion DateTime @default(now())
 
   usuario_afectado Users? @relation(fields: [usuario_afectado_id], references: [id])
+}
+
+enum UserAdminRole {
+  admin
+  superAdmin
+}
+
+model UserAdmin {
+  id                  String                  @id @default(uuid())
+  username            String                  @unique
+  mail                String                  @unique
+  password            String
+  role                UserAdminRole           @default(admin)
 }
 

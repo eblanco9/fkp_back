@@ -11,6 +11,8 @@ import {
 import { validateRequest } from '../../middleware/validateRequestHandle.js';
 import historialRouter from '../historial/historial.router.js'
 import multer from "multer";
+import { authenticate } from '../../middleware/auth.js';
+import { checkPermissionByRoles } from '../../middleware/checkPermission.js';
 
 const upload = multer({
     storage: multer.memoryStorage(), // o donde guardes los archivos temporalmente
@@ -18,6 +20,22 @@ const upload = multer({
 });
 
 const router = Router();
+
+//rutas publicas
+router.post(
+    '/crear-usuario', 
+    upload.fields([
+        { name: "dni_frente", maxCount: 1 },
+        { name: "dni_dorso", maxCount: 1 },
+    ]),
+    validateRequest(crearUsuarioSchema),
+    usuarioController.crearUsuario
+);
+
+//rutas privadas
+
+router.use(authenticate)
+router.use(checkPermissionByRoles(["superAdmin","admin"]))
 
 router.get(
     '/antiguo/:id_usuario',
@@ -52,15 +70,6 @@ router.post('/rechazar-usuario/:id_usuario',
     usuarioController.rechazarUsuario
 );
 
-router.post(
-    '/crear-usuario', 
-    upload.fields([
-        { name: "dni_frente", maxCount: 1 },
-        { name: "dni_dorso", maxCount: 1 },
-    ]),
-    validateRequest(crearUsuarioSchema),
-    usuarioController.crearUsuario
-);
 
 router.use('/:id_usuario/historial', historialRouter)
 

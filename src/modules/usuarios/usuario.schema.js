@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Gender, MaritalStatus, Estado } from "../../generated/prisma/index.js";
+import { Estado } from "../../generated/prisma/index.js";
 
 export const obtenerUsuarioAntiguoSchema = {
   params: z.object({
@@ -117,8 +117,6 @@ export const crearUsuarioSchema = {
     domicilio: z.string({ error: "El domicilio es requerido" }),
     email: z.email({ error: "El email es requerido" }),
     celular: z.string({ error: "El celular es requerido" }),
-    gender: z.enum(Gender, { error: `El gender debe ser alguna de las opciones: ${Object.values(Gender).join(", ")}` }),
-    maritalStatus: z.enum(MaritalStatus, { error: `El maritalStatus debe ser alguna de las opciones: ${Object.values(MaritalStatus).join(", ")}` }),
     whatsapp: z
       .refine((w) => ["true", "false"].includes(w), {
         message: (obj) =>
