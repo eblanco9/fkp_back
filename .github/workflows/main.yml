@@ -35,14 +35,19 @@ jobs:
           ssh -i ~/.ssh/id_rsa bitnami@63.178.113.71 "pm2 stop ws_fkp || true"
         shell: bash
 
-      # 5️⃣ Sincroniza archivos con el servidor (excepto node_modules)
-      - name: Sync files with SCP
+      - name: Sync files with SCP (excluding node_modules and .git)
         run: |
-          scp -i ~/.ssh/id_rsa -r \
-            -o StrictHostKeyChecking=no \
-            -o UserKnownHostsFile=/dev/null \
-            $(ls -A | grep -v node_modules | xargs) \
-            bitnami@63.178.113.71:/home/bitnami/node-app/
+          echo "🧹 Limpiando archivos que no se subirán..."
+          tar --exclude='.git' --exclude='node_modules' -czf deploy.tar.gz .
+          echo "📤 Subiendo archivos al servidor..."
+          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no deploy.tar.gz bitnami@63.178.113.71:/home/bitnami/
+          echo "📦 Descomprimiendo en el servidor..."
+          ssh -i ~/.ssh/id_rsa bitnami@63.178.113.71 << 'EOF'
+            cd /home/bitnami
+            mkdir -p node-app
+            tar --exclude='.git' --exclude='node_modules' -xzf deploy.tar.gz -C node-app
+            rm deploy.tar.gz
+          EOF
         shell: bash
 
       # 6️⃣ Instala dependencias, compila y reinicia con PM2
