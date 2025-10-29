@@ -38,7 +38,7 @@ jobs:
       - name: Sync files with SCP (excluding node_modules and .git)
         run: |
           echo "🧹 Limpiando archivos que no se subirán..."
-          tar --exclude='.git' --exclude='node_modules' -czf deploy.tar.gz .
+          tar --exclude='.git' --exclude='node_modules' -czf deploy.tar.gz . --warning=no-file-changed || true
           echo "📤 Subiendo archivos al servidor..."
           scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no deploy.tar.gz bitnami@63.178.113.71:/home/bitnami/
           echo "📦 Descomprimiendo en el servidor..."
