@@ -11,9 +11,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Clona el código del repo
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # 2️⃣ Configura SSH para conectarse al servidor
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
@@ -22,26 +24,42 @@ jobs:
           ssh-keyscan -H 63.178.113.71 >> ~/.ssh/known_hosts
         shell: bash
 
+      # 3️⃣ (opcional) Instala rsync por si el runner lo necesita
+      - name: Ensure rsync is available
+        run: sudo apt-get update -y && sudo apt-get install -y rsync
+        shell: bash
+
+      # 4️⃣ Detiene el proceso previo en el servidor (si existe)
       - name: Stop PM2 process
         run: |
           ssh -i ~/.ssh/id_rsa bitnami@63.178.113.71 "pm2 stop ws_fkp || true"
         shell: bash
 
-      - name: Sync files with SCP
+      # 5️⃣ Sincroniza archivos con el servidor (excepto node_modules)
+      - name: Sync files with Rsync
         run: |
-          scp -i ~/.ssh/id_rsa -r \
-            -o StrictHostKeyChecking=no \
-            -o UserKnownHostsFile=/dev/null \
-            $(ls -A | grep -v node_modules | xargs) \
-            bitnami@63.178.113.71:/home/bitnami/node-app/
+          rsync -avz --exclude 'node_modules' -e "ssh -i ~/.ssh/id_rsa" ./ bitnami@63.178.113.71:/home/bitnami/node-app
         shell: bash
 
+      # 6️⃣ Instala dependencias, compila y reinicia con PM2
       - name: Install dependencies & restart app
         run: |
           ssh -i ~/.ssh/id_rsa bitnami@63.178.113.71 << 'EOF'
+            echo "🚀 Iniciando deploy remoto en servidor Bitnami..."
             cd /home/bitnami/node-app
+
+            echo "📦 Instalando dependencias necesarias..."
             npm install sharp --force --include=optional --os=linux --cpu=x64 
-            npm run generate:all
-            pm2 start ws_firebots
+            npm install -g pm2
+            npm ci
+
+            echo "🏗️ Compilando proyecto..."
+            npm run build
+
+            echo "🔁 Reiniciando aplicación con PM2..."
+            pm2 delete ws_firebots || true
+            pm2 start npm --name ws_firebots -- run start
+
+            echo "✅ Deploy completado correctamente."
           EOF
         shell: bash
