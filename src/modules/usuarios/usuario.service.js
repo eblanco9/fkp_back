@@ -2,6 +2,7 @@ import HttpError from '../../errors/httpError.js';
 import prisma from '../../prisma-client.js';
 import s3Service from '../../services/s3.service.js';
 import { obtenerExtensionArchivo } from '../../utils/archivo.js';
+import { Estado } from '../../generated/prisma/index.js';
 
 const obtenerUsuarioAntiguo = async (id_usuario) => {
     const usuario = await prisma.usersOriginal.findUnique({
@@ -74,19 +75,12 @@ const obtenerUsuarios = async (query) => {
 
 const obtenerCantidadDeUsuariosSegunEstado = async () => {
     const grouped = await prisma.users.groupBy({
-        by: ['estado'],
+        by: ['status'],
         _count: { _all: true },
     });
-    if(grouped.length === 0){
-        return {
-            "approved": 0,
-            "rejected": 0,
-            "pending": 0
-        }
-    }
 
-    const response = grouped.reduce((acc, curr) => {
-        acc[curr.estado] = curr._count._all
+    const response = Object.values(Estado).reduce((acc, curr) => {
+        acc[curr] = grouped.find(group => group.status === curr)?._count._all || 0
         return acc
     },{})
     return response
