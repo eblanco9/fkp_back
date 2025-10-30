@@ -23,6 +23,17 @@ export const obtenerUsuarioNuevoSchema = {
   }),
 };
 
+export const obtenerUsuarioNuevoYAntiguoSchema = {
+  params: z.object({
+    id_usuario: z
+      .string()
+      .refine((id) => !isNaN(id), {
+        message: (obj) =>
+          `El param id_usuario: ${obj?.input} debe ser un string numérico`,
+      }),
+  }),
+};
+
 export const obtenerUsuariosSchema = {
   // { page = 1, limit = 10, estado }
   query: z.object({

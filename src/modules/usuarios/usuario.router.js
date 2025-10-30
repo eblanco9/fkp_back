@@ -7,7 +7,8 @@ import {
     aprobarUsuarioSchema,
     rechazarUsuarioSchema,
     crearUsuarioSchema,
-    agregarDiferenciasSchema
+    agregarDiferenciasSchema,
+    obtenerUsuarioNuevoYAntiguoSchema
 } from './usuario.schema.js';
 import { validateRequest } from '../../middleware/validateRequestHandle.js';
 import historialRouter from '../historial/historial.router.js'
@@ -79,6 +80,17 @@ router.post(
     usuarioController.agregarDiferencias
 )
 
+router.get(
+    '/obtener-usuario-nuevo-y-antiguo/:id_usuario',
+    validateRequest(obtenerUsuarioNuevoYAntiguoSchema),
+    usuarioController.obtenerUsuarioNuevoYAntiguo
+)
+
+router.get(
+    '/obtener-todos-los-usuarios-con-diferencias',
+    checkPermissionByRoles(["superAdmin"]), //aseguro que solo superAdmin pueda ver esto
+    usuarioController.obtenerTodosLosUsuariosConDiferencias
+)
 
 router.use('/:id_usuario/historial', historialRouter)
 

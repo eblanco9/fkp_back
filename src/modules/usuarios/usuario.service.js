@@ -198,6 +198,39 @@ const eliminarImagenDeUnUsuario = async(key_imagen) => {
     await s3Service.deleteFromS3(key_imagen)
 }
 
+const obtenerUsuarioNuevoYAntiguo = async (id_usuario) => {
+    const usuario_nuevo = await obtenerUsuarioNuevo(id_usuario)
+    const usuario_antiguo = await obtenerUsuarioAntiguo(id_usuario)
+    return {usuario_nuevo,usuario_antiguo}
+}
+
+export const obtenerTodosLosUsuariosConDiferencias = async () => {
+    const usuarios = await prisma.users.findMany({
+        where: {
+            has_differences: true
+        }
+    })
+
+    const response = usuarios.map((usuario) => {
+        return {
+            id: usuario.documentNumber,
+            firstName: usuario.firstName,
+            lastName: usuario.lastName,
+            birthDate: usuario.birthDate,
+            address: usuario.address,
+            email: usuario.email,
+            cellphone: usuario.cellphone,
+            whatsapp: usuario.whatsapp,
+            wants_to_buy: usuario.wants_to_buy,
+            has_differences: usuario.has_differences,
+            differences: usuario.differences
+        }
+    })
+
+    return response
+
+}
+
 export default {
     obtenerUsuarioAntiguo,
     obtenerUsuarioNuevo,
@@ -209,5 +242,7 @@ export default {
     eliminarUsuario,
     agregarImagenAUnUsuario,
     eliminarImagenDeUnUsuario,
-    agregarDiferencias
+    agregarDiferencias,
+    obtenerUsuarioNuevoYAntiguo,
+    obtenerTodosLosUsuariosConDiferencias
 };

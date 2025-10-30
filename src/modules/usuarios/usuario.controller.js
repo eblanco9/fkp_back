@@ -115,6 +115,25 @@ const agregarDiferencias = async (req, res, next) => {
     }
 };
 
+const obtenerUsuarioNuevoYAntiguo = async (req, res, next) => {
+    try {
+        const id_usuario = req.params.id_usuario;
+        const result = await usuarioService.obtenerUsuarioNuevoYAntiguo(id_usuario);
+        res.json(result);
+    } catch (error) {
+        next(error)
+    }
+}
+
+const obtenerTodosLosUsuariosConDiferencias = async (req, res, next) => {
+    try {
+        const result = await usuarioService.obtenerTodosLosUsuariosConDiferencias();
+        res.json(result);
+    } catch (error) {
+        next(error)
+    }   
+}
+
 export default {
     obtenerUsuarioAntiguo,
     obtenerUsuarioNuevo,
@@ -123,5 +142,7 @@ export default {
     aprobarUsuario,
     rechazarUsuario,
     crearUsuario,
-    agregarDiferencias
+    agregarDiferencias,
+    obtenerUsuarioNuevoYAntiguo,
+    obtenerTodosLosUsuariosConDiferencias
 };
