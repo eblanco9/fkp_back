@@ -60,14 +60,11 @@ jobs:
             echo "📦 Instalando dependencias necesarias..."
             npm install sharp --force --include=optional --os=linux --cpu=x64 
             npm install -g pm2
-            npm ci
-
-            echo "🏗️ Compilando proyecto..."
-            npm run build
-
+            npm run generate
+           
             echo "🔁 Reiniciando aplicación con PM2..."
-            pm2 delete ws_firebots || true
-            pm2 start npm --name ws_firebots -- run start
+            pm2 delete ws_fkp || true
+            pm2 start npm --name ws_fkp -- run prod
 
             echo "✅ Deploy completado correctamente."
           EOF
