@@ -33,16 +33,18 @@ router.post(
     usuarioController.crearUsuario
 );
 
-//rutas privadas
-
-router.use(authenticate)
-router.use(checkPermissionByRoles(["superAdmin","admin"]))
-
 router.get(
     '/antiguo/:id_usuario',
     validateRequest(obtenerUsuarioAntiguoSchema),
     usuarioController.obtenerUsuarioAntiguo
 );
+
+//rutas privadas
+
+router.use(authenticate)
+router.use(checkPermissionByRoles(["superAdmin","admin"]))
+
+
 router.get(
     '/nuevo/:id_usuario', 
     validateRequest(obtenerUsuarioNuevoSchema),
