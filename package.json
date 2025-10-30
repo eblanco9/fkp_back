@@ -1,9 +1,11 @@
 {
-    "name": "semilla-express-general",
+    "name": "fkp",
     "version": "1.0.0",
     "type": "module",
     "main": "index.js",
     "scripts": {
+        "prod" : "pm2 start src/server.js --name ws_fkp",
+        "generate": "prisma generate",
         "test": "echo \"Error: no test specified\" && exit 1",
         "dev": "nodemon src/server.js",
         "format": "prettier --write ."
