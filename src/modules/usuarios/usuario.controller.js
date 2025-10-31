@@ -2,8 +2,11 @@ import usuarioService from './usuario.service.js';
 import { 
     obtenerUsuariosSchema,
     crearUsuarioSchema,
-    agregarDiferenciasSchema
+    agregarDiferenciasSchema,
+    rechazarUsuarioSchema
 } from './usuario.schema.js';
+import { setConfigEmail, sendEmail, enviarEmailDeAprobacion, enviarEmailDeRechazo } from '../../services/email.service.js';
+
 
 
 
@@ -16,6 +19,16 @@ const obtenerUsuarioAntiguo = async (req, res, next) => {
         next(err);
     }
 };
+
+const verificarExistenciaDeUsuario = async (req, res, next) => {
+    try {
+        const id_usuario = req.params.id_usuario;
+        const result = await usuarioService.verificarExistenciaDeUsuario(id_usuario);
+        res.json(result);
+    } catch (err) {
+        next(err);
+    }
+}
 
 const obtenerUsuarioNuevo = async (req, res, next) => {
     try {
@@ -49,8 +62,11 @@ const obtenerCantidadDeUsuariosSegunEstado = async (req, res, next) => {
 const aprobarUsuario = async (req, res, next) => {
     try {
         const id_usuario = req.params.id_usuario;
+        const usuario = await usuarioService.obtenerUsuarioNuevo(id_usuario);
+        // intento enviar email
+        await enviarEmailDeAprobacion(usuario.email,usuario.firstName)
+
         const result = await usuarioService.aprobarUsuario(id_usuario);
-        // registrar en el historial?
         res.json(result);
     } catch (err) {
         next(err);
@@ -60,8 +76,11 @@ const aprobarUsuario = async (req, res, next) => {
 const rechazarUsuario = async (req, res, next) => {
     try {
         const id_usuario = req.params.id_usuario;
+        const body = rechazarUsuarioSchema.body.parse(req.body);
+        const usuario = await usuarioService.obtenerUsuarioNuevo(id_usuario);
+        // intento enviar email
+        await enviarEmailDeRechazo(usuario.email,usuario.firstName,body.motivo)
         const result = await usuarioService.rechazarUsuario(id_usuario);
-        //registrar en el historial?
         res.json(result);
     } catch (err) {
         next(err);
@@ -144,5 +163,6 @@ export default {
     crearUsuario,
     agregarDiferencias,
     obtenerUsuarioNuevoYAntiguo,
-    obtenerTodosLosUsuariosConDiferencias
+    obtenerTodosLosUsuariosConDiferencias,
+    verificarExistenciaDeUsuario
 };

@@ -37,7 +37,8 @@ router.post(
 router.get(
     '/antiguo/:id_usuario',
     validateRequest(obtenerUsuarioAntiguoSchema),
-    usuarioController.obtenerUsuarioAntiguo
+    // cambio de controlador para verificar la existencia del usuario
+    usuarioController.verificarExistenciaDeUsuario
 );
 
 //rutas privadas

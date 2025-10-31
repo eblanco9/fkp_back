@@ -142,34 +142,32 @@ const crearUsuario = async (usuario,documentBackImage,documentFrontImage) => {
 
     } = usuario
 
-
-
-    const usuarioExistente = await prisma.users.findUnique({
-        where: {
-            documentNumber: numero_documento
-        }
-    })
-
-    if (usuarioExistente) {
-        throw new HttpError(409, "El usuario ya existe");
+    const datos_usuario = {
+        firstName: nombre,
+        lastName: apellido,
+        birthDate: new Date(fecha_de_nacimiento).toISOString(),
+        address: domicilio,
+        email,
+        cellphone: celular,
+        gender,
+        maritalStatus,
+        whatsapp,
+        wants_to_buy,
+        documentFrontImage,
+        documentBackImage
     }
-    
 
-    const usuarioCreado = await prisma.users.create({
-        data: {
-            firstName: nombre,
-            lastName: apellido,
-            birthDate: new Date(fecha_de_nacimiento).toISOString(),
+    const usuarioCreado = await prisma.users.upsert({
+        where:{
+            documentNumber: numero_documento
+        },
+        create: {
             documentNumber: numero_documento,
-            address: domicilio,
-            email,
-            cellphone: celular,
-            gender,
-            maritalStatus,
-            whatsapp,
-            wants_to_buy,
-            documentFrontImage,
-            documentBackImage
+            ...datos_usuario
+        },
+        update: {
+            status: "pending",
+            ...datos_usuario
         }
     })
     return usuarioCreado
@@ -231,6 +229,35 @@ export const obtenerTodosLosUsuariosConDiferencias = async () => {
 
 }
 
+const verificarExistenciaDeUsuario = async (id_usuario) => {
+    const usuarioAntiguo = await prisma.usersOriginal.findUnique({
+        where: {
+            documentNumber: id_usuario
+        }
+    })
+
+    if(!usuarioAntiguo){
+        throw HttpError.notFound("No se encontro el usuario");
+    }
+
+    // verifico que el usuario esta en la nueva tabla
+    const usuarioNuevo = await prisma.users.findUnique({
+        where: {
+            documentNumber: id_usuario
+        }
+    })
+
+    const response = {
+        "documentNumber": id_usuario,
+    }
+
+    if(usuarioNuevo){
+        response["status"] = usuarioNuevo.status
+    }
+
+    return response
+    
+}
 export default {
     obtenerUsuarioAntiguo,
     obtenerUsuarioNuevo,
@@ -244,5 +271,6 @@ export default {
     eliminarImagenDeUnUsuario,
     agregarDiferencias,
     obtenerUsuarioNuevoYAntiguo,
-    obtenerTodosLosUsuariosConDiferencias
+    obtenerTodosLosUsuariosConDiferencias,
+    verificarExistenciaDeUsuario
 };
