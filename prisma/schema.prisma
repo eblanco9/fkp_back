@@ -30,7 +30,7 @@ model Users {
   email               String? 
   firstName           String?
   lastName            String?
-  birthDate           DateTime?
+  birthDate           DateTime?               @db.Date
   address             String?
   cellphone           String?
   whatsapp            Boolean?                @default(false)
@@ -59,7 +59,7 @@ model UsersOriginal {
   email               String? 
   firstName           String?
   lastName            String?
-  birthDate           DateTime?
+  birthDate           DateTime?               @db.Date
   address             String?
   cellphone           String?
   whatsapp            Boolean?                @default(false)

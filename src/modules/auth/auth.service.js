@@ -24,7 +24,10 @@ const login = async (username, password) => {
         id: userAdmin.id
     }); 
     
-    return token
+    return {
+        username: userAdmin.username,
+        token
+    }
 
 }
 

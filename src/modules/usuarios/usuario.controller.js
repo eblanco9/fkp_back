@@ -5,7 +5,7 @@ import {
     agregarDiferenciasSchema,
     rechazarUsuarioSchema
 } from './usuario.schema.js';
-import { setConfigEmail, sendEmail, enviarEmailDeAprobacion, enviarEmailDeRechazo } from '../../services/email.service.js';
+import { enviarEmailDeAprobacion, enviarEmailDeRechazo } from '../../services/email.service.js';
 
 
 

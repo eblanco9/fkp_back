@@ -14,7 +14,10 @@ const obtenerUsuarioAntiguo = async (id_usuario) => {
     if(!usuario){
         throw new HttpError(404, "No se encontro el usuario antiguo");
     }
-    return usuario
+    return {
+        ...usuario,
+        birthDate: usuario.birthDate.toISOString().split('T')[0]
+    }
 }
 
 const obtenerUsuarioNuevo = async (id_usuario) => {
@@ -43,8 +46,10 @@ const obtenerUsuarioNuevo = async (id_usuario) => {
     //     })
 
     // }
-    const {id, ...response} = usuario
-    return response
+    return {
+        ...usuario,
+        birthDate: usuario.birthDate.toISOString().split('T')[0]
+    }
 }
 
 const obtenerUsuarios = async (query) => {
@@ -199,7 +204,14 @@ const eliminarImagenDeUnUsuario = async(key_imagen) => {
 const obtenerUsuarioNuevoYAntiguo = async (id_usuario) => {
     const usuario_nuevo = await obtenerUsuarioNuevo(id_usuario)
     const usuario_antiguo = await obtenerUsuarioAntiguo(id_usuario)
-    return {usuario_nuevo,usuario_antiguo}
+    return {
+        usuario_nuevo:{
+            ...usuario_nuevo
+        },
+        usuario_antiguo:{
+            ...usuario_antiguo
+        }
+    }
 }
 
 export const obtenerTodosLosUsuariosConDiferencias = async () => {
