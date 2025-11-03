@@ -223,7 +223,8 @@ export const obtenerTodosLosUsuariosConDiferencias = async () => {
 
     const response = usuarios.map((usuario) => {
         return {
-            id: usuario.documentNumber,
+            id: usuario.id,
+            documentNumber: usuario.documentNumber,
             firstName: usuario.firstName,
             lastName: usuario.lastName,
             birthDate: usuario.birthDate,
