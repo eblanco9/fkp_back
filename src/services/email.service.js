@@ -71,7 +71,7 @@ export const enviarEmailDeAprobacion = async (email, nombre) => {
 export const enviarEmailDeRechazo = async (email, nombre, mensaje_moderador) => {
     let text_a_enviar = rejected_email_template.text
     text_a_enviar = text_a_enviar.replace('[Nombre]', nombre)
-    text_a_enviar = text_a_enviar.replace('[link]', 'link de rechazo') 
+    text_a_enviar = text_a_enviar.replace('[link]', 'https://develop.d2k4hfb6ypo1ii.amplifyapp.com/') 
     text_a_enviar = text_a_enviar.replace('[mensaje_moderador]', mensaje_moderador) 
 
     const mailOptions = {
