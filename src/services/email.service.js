@@ -6,9 +6,9 @@ const mailerSend = new MailerSend({
     apiKey: process.env.MAILERSEND_API_KEY,
 });
 
-const sentFrom = new Sender("info@mikasawor.com", "FKP - Mi Kas Awor");
+const sentFrom = new Sender("hurdo@mikasawor.com", "FKP - Mi Kas Awor");
 
-const DEFAULT_FROM_EMAIL = "info@mikasawor.com";
+const DEFAULT_FROM_EMAIL = "hurdo@mikasawor.com";
 
 const approved_email_template = {
     subject: `¡Tus datos fueron verificados correctamente!`,
