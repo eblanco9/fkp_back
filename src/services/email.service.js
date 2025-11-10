@@ -6,7 +6,7 @@ const mailerSend = new MailerSend({
     apiKey: process.env.MAILERSEND_API_KEY,
 });
 
-const sentFrom = new Sender("hurdo@mikasawor.com", "FKP - Mi Kas Awor");
+const sentFrom = new Sender("hurdo@mikasawor.com", "Hürdó di FKP");
 
 const DEFAULT_FROM_EMAIL = "hurdo@mikasawor.com";
 
