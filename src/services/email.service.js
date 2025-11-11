@@ -11,31 +11,24 @@ const sentFrom = new Sender("hurdo@mikasawor.com", "Hürdó di FKP");
 const DEFAULT_FROM_EMAIL = "hurdo@mikasawor.com";
 
 const approved_email_template = {
-    subject: `¡Tus datos fueron verificados correctamente!`,
+    subject: `Bo informashon a wòrdu verifiká ku éksito!`,
     text: `
-Hola [Nombre], Gracias por actualizar tu información con 
-Fundashon Kas Popular (FKP). 
-Confirmamos que tus datos fueron verificados con éxito y 
-que ya estás participando en los sorteos exclusivos para 
-inquilinos FKP.
-Te mantendremos informado/a sobre las próximas 
-novedades y los ganadores. 
-Un cordial saludo, 
-Equipo de FKP`
+Konta [Nombre], Danki pa aktualisá bo informashon ku Fundashon Kas Popular (FKP). 
+Nos ta konfirmá ku bo informashon a keda verifiká ku éksito i ku awor bo ta partisipá na e sorteo eksklusivo pa hürdónan di FKP.
+Nos lo tene bo informá tokante e próksimo aktualisashonnan i e ganadónan. 
+Un kordial saludo, 
+Tim di FKP`
 };
 
 const rejected_email_template = {
-    subject: `Necesitamos que revises tu registro en Inquilinos FKP`,
+    subject: `Nos mester pa bo revisá bo registrashon den Hürdónan FKP`,
     text: `
-Hola [Nombre], detectamos que algunos de los 
-datos que enviaste no coinciden con los que 
-tenemos registrados. 
-Mensaje del moderador: [mensaje_moderador]
-Por favor, ingresá nuevamente al siguiente enlace 
-y completa la actualización correctamente: [link].
-Gracias por tu colaboración. 
-Un cordial saludo, 
-Equipo de FKP`
+Konta [Nombre], Nos a detektá ku algun di e informashonnan ku bo a manda no ta kuadra ku loke nos tin registrá. 
+Mensahe di Moderador: [mensaje_moderador]
+Por fabor, bolbe subi e siguiente link i kompletá e aktualisashon korektamente: [link].
+Danki pa boso kolaborashon. 
+Un kordial saludo, 
+Tim di FKP`
 };
 
 /**
