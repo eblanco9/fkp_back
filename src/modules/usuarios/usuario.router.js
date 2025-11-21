@@ -41,6 +41,11 @@ router.get(
     usuarioController.verificarExistenciaDeUsuario
 );
 
+router.get(
+    '/participantes',
+    usuarioController.obtenerUsuariosParaSorteo
+);
+
 //rutas privadas
 
 router.use(authenticate)

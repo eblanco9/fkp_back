@@ -153,6 +153,15 @@ const obtenerTodosLosUsuariosConDiferencias = async (req, res, next) => {
     }   
 }
 
+const obtenerUsuariosParaSorteo = async (req, res, next) => {
+    try {
+        const result = await usuarioService.obtenerUsuariosParaSorteo();
+        res.json(result);
+    } catch (error) {
+        next(error)
+    }
+}
+
 export default {
     obtenerUsuarioAntiguo,
     obtenerUsuarioNuevo,
@@ -164,5 +173,6 @@ export default {
     agregarDiferencias,
     obtenerUsuarioNuevoYAntiguo,
     obtenerTodosLosUsuariosConDiferencias,
-    verificarExistenciaDeUsuario
+    verificarExistenciaDeUsuario,
+    obtenerUsuariosParaSorteo
 };

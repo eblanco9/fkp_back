@@ -11,7 +11,7 @@ const obtenerUsuarioAntiguo = async (id_usuario) => {
         }
     })
 
-    if(!usuario){
+    if (!usuario) {
         throw new HttpError(404, "No se encontro el usuario antiguo");
     }
     return {
@@ -27,7 +27,7 @@ const obtenerUsuarioNuevo = async (id_usuario) => {
         }
     })
 
-    if(!usuario){
+    if (!usuario) {
         throw new HttpError(404, "No se encontro el usuario");
     }
 
@@ -62,7 +62,7 @@ const obtenerUsuarios = async (query) => {
         where: estado ? { status: estado } : {}, // filtrar por estado si viene
         skip: (pageNumber - 1) * pageSize,
         take: pageSize,
-        orderBy: { id: "desc" } 
+        orderBy: { id: "desc" }
     });
 
     const total = await prisma.users.count({
@@ -87,19 +87,19 @@ const obtenerCantidadDeUsuariosSegunEstado = async () => {
     const response = Object.values(Estado).reduce((acc, curr) => {
         acc[curr] = grouped.find(group => group.status === curr)?._count._all || 0
         return acc
-    },{})
+    }, {})
     return response
 }
 
 const aprobarUsuario = async (id_usuario) => {
     const usuario = await obtenerUsuarioNuevo(id_usuario)
     const usuarioActualizado = await prisma.users.update({
-      where: {
-        documentNumber: id_usuario
-      },
-      data: {
-        status: "approved"
-      }
+        where: {
+            documentNumber: id_usuario
+        },
+        data: {
+            status: "approved"
+        }
     })
     return usuarioActualizado
 }
@@ -107,12 +107,12 @@ const aprobarUsuario = async (id_usuario) => {
 const rechazarUsuario = async (id_usuario) => {
     const usuario = await obtenerUsuarioNuevo(id_usuario)
     const usuarioActualizado = await prisma.users.update({
-      where: {
-        documentNumber: id_usuario
-      },
-      data: {
-        status: "rejected"
-      }
+        where: {
+            documentNumber: id_usuario
+        },
+        data: {
+            status: "rejected"
+        }
     })
     return usuarioActualizado
 }
@@ -120,18 +120,18 @@ const rechazarUsuario = async (id_usuario) => {
 const agregarDiferencias = async (id_usuario, diferencias) => {
     const usuario = await obtenerUsuarioNuevo(id_usuario)
     const usuarioActualizado = await prisma.users.update({
-      where: {
-        documentNumber: id_usuario
-      },
-      data: {
-        has_differences: true,
-        differences: diferencias
-      }
+        where: {
+            documentNumber: id_usuario
+        },
+        data: {
+            has_differences: true,
+            differences: diferencias
+        }
     })
     return usuarioActualizado
 }
 
-const crearUsuario = async (usuario,documentBackImage,documentFrontImage) => {
+const crearUsuario = async (usuario, documentBackImage, documentFrontImage) => {
     const {
         nombre,
         apellido,
@@ -163,7 +163,7 @@ const crearUsuario = async (usuario,documentBackImage,documentFrontImage) => {
     }
 
     const usuarioCreado = await prisma.users.upsert({
-        where:{
+        where: {
             documentNumber: numero_documento
         },
         create: {
@@ -185,7 +185,7 @@ const eliminarUsuario = async (id_usuario) => {
         }
     })
 }
-const agregarImagenAUnUsuario = async(file,nro_documento) => {
+const agregarImagenAUnUsuario = async (file, nro_documento) => {
     const tipo_de_archivo = obtenerExtensionArchivo(file)
     const nombre_archivo_dni_frente = `${file.fieldname}.${tipo_de_archivo}`
     return await s3Service.uploadToS3(
@@ -194,10 +194,10 @@ const agregarImagenAUnUsuario = async(file,nro_documento) => {
         file.mimetype,
         'usuarios',
         nro_documento
-    ) 
+    )
 };
 
-const eliminarImagenDeUnUsuario = async(key_imagen) => {
+const eliminarImagenDeUnUsuario = async (key_imagen) => {
     await s3Service.deleteFromS3(key_imagen)
 }
 
@@ -205,10 +205,10 @@ const obtenerUsuarioNuevoYAntiguo = async (id_usuario) => {
     const usuario_nuevo = await obtenerUsuarioNuevo(id_usuario)
     const usuario_antiguo = await obtenerUsuarioAntiguo(id_usuario)
     return {
-        usuario_nuevo:{
+        usuario_nuevo: {
             ...usuario_nuevo
         },
-        usuario_antiguo:{
+        usuario_antiguo: {
             ...usuario_antiguo
         }
     }
@@ -242,6 +242,39 @@ export const obtenerTodosLosUsuariosConDiferencias = async () => {
 
 }
 
+const obtenerUsuariosParaSorteo = async () => {
+    const usuarios = await prisma.users.findMany({
+        where: {
+            status: "approved",
+        },
+        orderBy: {
+            createdAt: "asc", // orden estable para numeración
+        },
+        select: {
+            documentNumber: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            cellphone: true,
+            address: true,
+            createdAt: true,
+        },
+    });
+
+    const participantes = usuarios.map((u, index) => ({
+        numero: index + 1,                          // autoincremental
+        nombre: u.firstName ?? "",
+        apellido: u.lastName ?? "",
+        email: u.email ?? "",
+        telefono: u.cellphone ?? "",
+        direccion: u.address ?? "",
+        id: u.documentNumber ?? "",                // 10 dígitos según tu validación
+    }));
+
+    return participantes;
+};
+
+
 const verificarExistenciaDeUsuario = async (id_usuario) => {
     const usuarioAntiguo = await prisma.usersOriginal.findUnique({
         where: {
@@ -249,7 +282,7 @@ const verificarExistenciaDeUsuario = async (id_usuario) => {
         }
     })
 
-    if(!usuarioAntiguo){
+    if (!usuarioAntiguo) {
         throw HttpError.notFound("No se encontro el usuario");
     }
 
@@ -264,12 +297,12 @@ const verificarExistenciaDeUsuario = async (id_usuario) => {
         "documentNumber": id_usuario,
     }
 
-    if(usuarioNuevo){
+    if (usuarioNuevo) {
         response["status"] = usuarioNuevo.status
     }
 
     return response
-    
+
 }
 export default {
     obtenerUsuarioAntiguo,
@@ -285,5 +318,6 @@ export default {
     agregarDiferencias,
     obtenerUsuarioNuevoYAntiguo,
     obtenerTodosLosUsuariosConDiferencias,
-    verificarExistenciaDeUsuario
+    verificarExistenciaDeUsuario,
+    obtenerUsuariosParaSorteo
 };
