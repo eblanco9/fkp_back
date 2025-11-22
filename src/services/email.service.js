@@ -15,7 +15,18 @@ const approved_email_template = {
     text: `
 Konta [Nombre], Danki pa aktualisá bo informashon ku Fundashon Kas Popular (FKP). 
 Nos ta konfirmá ku bo informashon a keda verifiká ku éksito i ku awor bo ta partisipá na e sorteo eksklusivo pa hürdónan di FKP.
-Nos lo tene bo informá tokante e próksimo aktualisashonnan i e ganadónan. 
+Nos lo tene bo informá tokante e próksimo aktualisashonnan i e ganadónan.
+E sorteo lo ta dia 30 di desèmber pa 3:00 PM.
+Premionan di e sorteo:
+
+Promé premio
+Gift Card di Mangusa Supermarket – XCG 2,500
+
+Di dos premio
+Gift Card di Building Depot – XCG 1,500
+
+Di tres premio
+Gift Card di Boolchand's – XCG 1,000
 Un kordial saludo, 
 Tim di FKP`
 };
