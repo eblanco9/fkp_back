@@ -6,8 +6,8 @@ import { authenticate } from "../../middleware/auth.js";
 import { checkPermissionByRoles } from "../../middleware/checkPermission.js";
 const router = Router();
 
-router.use(authenticate)
-router.use(checkPermissionByRoles(["superAdmin"]))
+/* router.use(authenticate)
+router.use(checkPermissionByRoles(["superAdmin"])) */
 
 router.post(
     '/',
