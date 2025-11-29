@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+}
+
+enum Estado {
+ pending 
+ approved
+ rejected
+}
+
+enum enum_users_documentType {
+  nationalId
+
+}
+
+
+
+model Users {
+  id                  String                  @id @default(uuid())
+  //campos que viene en el request
+  documentNumber      String                  @unique
+  //puede ser que no este
+  documentType        enum_users_documentType  @default(nationalId)
+  email               String? 
+  firstName           String?
+  lastName            String?
+  birthDate           DateTime?               @db.Date
+  address             String?
+  cellphone           String?
+  whatsapp            Boolean?                @default(false)
+  wants_to_buy        Boolean?                @default(false)
+  //
+  has_differences     Boolean?                @default(false)
+  differences         String?
+  origin              String?
+  documentFrontImage  String?
+  documentBackImage   String?
+  status              Estado?                 @default(pending)
+  createdAt           DateTime                @default(now())
+  updatedAt           DateTime                @updatedAt
+
+  historial Historial[]
+
+  @@map("users")
+}
+
+
+
+model UsersOriginal {
+  id                  String                  @id @default(uuid())
+  documentNumber      String                  @unique
+  documentType        enum_users_documentType  @default(nationalId)
+  email               String? 
+  firstName           String?
+  lastName            String?
+  birthDate           DateTime?               @db.Date
+  address             String?
+  cellphone           String?
+  whatsapp            Boolean?                @default(false)
+  wants_to_buy        Boolean?                @default(false)
+  has_differences     Boolean?                @default(false)
+  differences         String?
+  origin              String?
+  documentFrontImage  String?
+  documentBackImage   String?
+  status              Estado?                 @default(pending)
+  createdAt           DateTime                @default(now())
+  updatedAt           DateTime                @updatedAt
+
+  @@map("users_original")
+}
+
+model Historial {
+  id Int @id @default(autoincrement())
+  usuario_afectado_id String 
+  titulo String
+  motivo String
+  fecha_de_creacion DateTime @default(now())
+
+  usuario_afectado Users? @relation(fields: [usuario_afectado_id], references: [id])
+}
+
+enum UserAdminRole {
+  admin
+  superAdmin
+}
+
+model UserAdmin {
+  id                  String                  @id @default(uuid())
+  username            String                  @unique
+  mail                String                  @unique
+  password            String
+  role                UserAdminRole           @default(admin)
+}
+
