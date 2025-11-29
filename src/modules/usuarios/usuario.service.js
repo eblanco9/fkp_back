@@ -62,7 +62,7 @@ const obtenerUsuarios = async (query) => {
         where: estado ? { status: estado } : {}, // filtrar por estado si viene
         skip: (pageNumber - 1) * pageSize,
         take: pageSize,
-        orderBy: { id: "desc" }
+        orderBy: { createdAt: "asc" }
     });
 
     const total = await prisma.users.count({

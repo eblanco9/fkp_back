@@ -4,7 +4,7 @@
     "type": "module",
     "main": "index.js",
     "scripts": {
-        "prod": "pm2 start src/server.js --name ws_fkp",
+        "prod": "pm2 start src/server.js --name ws_fkp -i 2",
         "generate": "prisma generate",
         "test": "echo \"Error: no test specified\" && exit 1",
         "dev": "nodemon src/server.js",
