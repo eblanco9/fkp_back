@@ -8,7 +8,8 @@ import {
     rechazarUsuarioSchema,
     crearUsuarioSchema,
     agregarDiferenciasSchema,
-    obtenerUsuarioNuevoYAntiguoSchema
+    obtenerUsuarioNuevoYAntiguoSchema,
+    actualizarImagenDniFrenteSchema
 } from './usuario.schema.js';
 import { validateRequest } from '../../middleware/validateRequestHandle.js';
 import historialRouter from '../historial/historial.router.js'
@@ -98,7 +99,20 @@ router.get(
     usuarioController.obtenerTodosLosUsuariosConDiferencias
 )
 
-router.use('/:id_usuario/historial', historialRouter)
+router.post(
+    '/actualizar-imagen-dni/:id_usuario',
+    upload.fields([
+        { name: "dni_frente", maxCount: 1 },
+    ]),
+    validateRequest(actualizarImagenDniFrenteSchema),
+    usuarioController.actualizarImagenDniFrente
+)
 
+router.get(
+    '/obtener-todos-los-usuarios-con-interes-en-comprar',
+    usuarioController.obtenerTodosLosUsuariosConInteresEnComprar
+)
+
+router.use('/:id_usuario/historial', historialRouter)
 
 export default router;
