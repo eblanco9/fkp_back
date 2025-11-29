@@ -1,4 +1,4 @@
-name: Deploy FKP Develop
+name: Deploy FKP Prod
 
 on:
   push:
