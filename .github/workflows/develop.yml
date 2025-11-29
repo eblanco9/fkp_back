@@ -32,7 +32,7 @@ jobs:
       # 4️⃣ Detiene el proceso previo en el servidor (si existe)
       - name: Stop PM2 process
         run: |
-          ssh -i ~/.ssh/id_rsa bitnami@63.178.113.71 "pm2 stop ws_fkp || true"
+          ssh -i ~/.ssh/id_rsa bitnami@3.76.1.12 "pm2 stop ws_fkp || true"
         shell: bash
 
       - name: Sync files with SCP (excluding node_modules and .git)
