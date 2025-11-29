@@ -40,9 +40,9 @@ jobs:
           echo "🧹 Limpiando archivos que no se subirán..."
           tar --exclude='.git' --exclude='node_modules' -czf deploy.tar.gz . --warning=no-file-changed || true
           echo "📤 Subiendo archivos al servidor..."
-          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no deploy.tar.gz bitnami@63.178.113.71:/home/bitnami/
+          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no deploy.tar.gz bitnami@3.76.1.12:/home/bitnami/
           echo "📦 Descomprimiendo en el servidor..."
-          ssh -i ~/.ssh/id_rsa bitnami@63.178.113.71 << 'EOF'
+          ssh -i ~/.ssh/id_rsa bitnami@3.76.1.12 << 'EOF'
             cd /home/bitnami
             mkdir -p node-app
             tar --exclude='.git' --exclude='node_modules' -xzf deploy.tar.gz -C node-app
@@ -53,7 +53,7 @@ jobs:
       # 6️⃣ Instala dependencias, compila y reinicia con PM2
       - name: Install dependencies & restart app
         run: |
-          ssh -i ~/.ssh/id_rsa bitnami@63.178.113.71 << 'EOF'
+          ssh -i ~/.ssh/id_rsa bitnami@3.76.1.12 << 'EOF'
             echo "🚀 Iniciando deploy remoto en servidor Bitnami..."
             cd /home/bitnami/node-app
 
