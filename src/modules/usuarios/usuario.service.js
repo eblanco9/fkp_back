@@ -304,6 +304,33 @@ const verificarExistenciaDeUsuario = async (id_usuario) => {
     return response
 
 }
+
+const obtenerTodosLosUsuariosConInteresEnComprar = async () => {
+    const usuarios = await prisma.users.findMany({
+        where:{
+            wants_to_buy: true
+        }
+    })
+
+    const response = usuarios.map((usuario) => {
+        return {
+            id: usuario.id,
+            documentNumber: usuario.documentNumber,
+            firstName: usuario.firstName,
+            lastName: usuario.lastName,
+            birthDate: usuario.birthDate,
+            address: usuario.address,
+            email: usuario.email,
+            cellphone: usuario.cellphone,
+            whatsapp: usuario.whatsapp,
+            wants_to_buy: usuario.wants_to_buy,
+            has_differences: usuario.has_differences,
+            differences: usuario.differences
+        }
+    })
+
+    return response
+}
 export default {
     obtenerUsuarioAntiguo,
     obtenerUsuarioNuevo,
@@ -319,5 +346,6 @@ export default {
     obtenerUsuarioNuevoYAntiguo,
     obtenerTodosLosUsuariosConDiferencias,
     verificarExistenciaDeUsuario,
-    obtenerUsuariosParaSorteo
+    obtenerUsuariosParaSorteo,
+    obtenerTodosLosUsuariosConInteresEnComprar
 };
