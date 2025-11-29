@@ -3,7 +3,8 @@ import {
     obtenerUsuariosSchema,
     crearUsuarioSchema,
     agregarDiferenciasSchema,
-    rechazarUsuarioSchema
+    rechazarUsuarioSchema,
+    actualizarImagenDniFrenteSchema
 } from './usuario.schema.js';
 import { enviarEmailDeAprobacion, enviarEmailDeRechazo } from '../../services/email.service.js';
 
@@ -98,7 +99,6 @@ const crearUsuario = async (req, res, next) => {
         const result_imagen_dni_dorso = await usuarioService.agregarImagenAUnUsuario(files.dni_dorso[0],body.numero_documento)
         compensations.push(() => usuarioService.eliminarImagenDeUnUsuario(result_imagen_dni_dorso.key) )
 
-        console.log(files)
         //creo el usuario en la db
         //falta agregar las url de las imagenes
         const usuario_creado = await usuarioService.crearUsuario(body,result_imagen_dni_dorso.url,result_imagen_dni_frente.url);
@@ -162,6 +162,33 @@ const obtenerUsuariosParaSorteo = async (req, res, next) => {
     }
 }
 
+const actualizarImagenDniFrente = async (req, res, next) => {
+    try {
+        const id_usuario = req.params.id_usuario;
+        //verifico que el usuario exista
+        obtenerUsuarioNuevo(nro_documento)
+        const files = actualizarImagenDniFrenteSchema.files.parse(req.files);
+        //la imagen nueva debe pisar la anterior
+        const result_imagen_dni_frente = await usuarioService.agregarImagenAUnUsuario(files.dni_frente[0],id_usuario)
+        const response = {
+            "message": "Imagen actualizada exitosamente",
+            "imageUrl": result_imagen_dni_frente.url
+        }
+        res.json(response);
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const obtenerTodosLosUsuariosConInteresEnComprar = async (req, res, next) => {
+    try {
+        const result = await usuarioService.obtenerTodosLosUsuariosConInteresEnComprar()
+        res.json(result);
+    } catch (error) {
+        next(error)
+    }
+}
+
 export default {
     obtenerUsuarioAntiguo,
     obtenerUsuarioNuevo,
@@ -174,5 +201,7 @@ export default {
     obtenerUsuarioNuevoYAntiguo,
     obtenerTodosLosUsuariosConDiferencias,
     verificarExistenciaDeUsuario,
-    obtenerUsuariosParaSorteo
+    obtenerUsuariosParaSorteo,
+    actualizarImagenDniFrente,
+    obtenerTodosLosUsuariosConInteresEnComprar
 };
