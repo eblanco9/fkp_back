@@ -3,6 +3,7 @@ import prisma from '../../prisma-client.js';
 import s3Service from '../../services/s3.service.js';
 import { obtenerExtensionArchivo } from '../../utils/archivo.js';
 import { Estado } from '../../generated/prisma/index.js';
+import crypto from "crypto";
 
 const obtenerUsuarioAntiguo = async (id_usuario) => {
     const usuario = await prisma.usersOriginal.findUnique({
@@ -187,7 +188,7 @@ const eliminarUsuario = async (id_usuario) => {
 }
 const agregarImagenAUnUsuario = async (file, nro_documento) => {
     const tipo_de_archivo = obtenerExtensionArchivo(file)
-    const nombre_archivo_dni_frente = `${file.fieldname}.${tipo_de_archivo}`
+    const nombre_archivo_dni_frente = `${crypto.randomUUID()}-${file.fieldname}.${tipo_de_archivo}`
     return await s3Service.uploadToS3(
         file.buffer,
         nombre_archivo_dni_frente,
