@@ -47,6 +47,11 @@ router.get(
     usuarioController.obtenerUsuariosParaSorteo
 );
 
+router.get(
+    '/cantidad-de-usuarios-segun-estado', 
+    usuarioController.obtenerCantidadDeUsuariosSegunEstado
+)
+
 //rutas privadas
 
 router.use(authenticate)
@@ -64,11 +69,6 @@ router.get(
     validateRequest(obtenerUsuariosSchema), 
     usuarioController.obtenerUsuarios
 );
-
-router.get(
-    '/cantidad-de-usuarios-segun-estado', 
-    usuarioController.obtenerCantidadDeUsuariosSegunEstado
-)
 
 router.post(
     '/aprobar-usuario/:id_usuario', 
