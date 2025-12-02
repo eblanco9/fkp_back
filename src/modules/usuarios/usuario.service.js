@@ -206,16 +206,6 @@ const updateImagenFrenteAUnUsuario = async ( imagenUrl, nro_documento) => {
             documentFrontImage: imagenUrl
         }
     })
-
-    const tipo_de_archivo = obtenerExtensionArchivo(file)
-    const nombre_archivo_dni_frente = `${nro_documento}-${crypto.randomUUID()}-${file.fieldname}.${tipo_de_archivo}`
-    return await s3Service.uploadToS3(
-        file.buffer,
-        nombre_archivo_dni_frente,
-        file.mimetype,
-        'usuarios',
-        nro_documento
-    )
 };
 
 const eliminarImagenDeUnUsuario = async (key_imagen) => {
