@@ -49,7 +49,7 @@ router.get(
 
 router.get(
     '/cantidad-de-usuarios-segun-estado', 
-    usuarioController.obtenerCantidadDeUsuariosSegunEstadop
+    usuarioController.obtenerCantidadDeUsuariosSegunEstado
 )
 
 //rutas privadas
