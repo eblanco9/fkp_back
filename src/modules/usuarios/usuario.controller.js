@@ -96,8 +96,8 @@ const crearUsuario = async (req, res, next) => {
         //agrego las imagenes al usuario
         const result_imagen_dni_frente = await usuarioService.agregarImagenAUnUsuario(files.dni_frente[0],body.numero_documento)
         compensations.push(() => usuarioService.eliminarImagenDeUnUsuario(result_imagen_dni_frente.key) )
-        const result_imagen_dni_dorso = await usuarioService.agregarImagenAUnUsuario(files.dni_dorso[0],body.numero_documento)
-        compensations.push(() => usuarioService.eliminarImagenDeUnUsuario(result_imagen_dni_dorso.key) )
+        /* const result_imagen_dni_dorso = await usuarioService.agregarImagenAUnUsuario(files.dni_dorso[0],body.numero_documento)
+        compensations.push(() => usuarioService.eliminarImagenDeUnUsuario(result_imagen_dni_dorso.key) ) */
 
         //creo el usuario en la db
         //falta agregar las url de las imagenes
