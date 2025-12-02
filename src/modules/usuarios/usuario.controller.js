@@ -170,6 +170,8 @@ const actualizarImagenDniFrente = async (req, res, next) => {
         const files = actualizarImagenDniFrenteSchema.files.parse(req.files);
         //la imagen nueva debe pisar la anterior
         const result_imagen_dni_frente = await usuarioService.agregarImagenAUnUsuario(files.dni_frente[0],id_usuario)
+        const result = await usuarioService.updateImagenFrenteAUnUsuario(result_imagen_dni_frente.url ,id_usuario);
+        console.log('Se edito el ID de un user' , result);
         const response = {
             "message": "Imagen actualizada exitosamente",
             "imageUrl": result_imagen_dni_frente.url

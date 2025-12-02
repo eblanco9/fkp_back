@@ -187,7 +187,28 @@ const eliminarUsuario = async (id_usuario) => {
 }
 const agregarImagenAUnUsuario = async (file, nro_documento) => {
     const tipo_de_archivo = obtenerExtensionArchivo(file)
-    const nombre_archivo_dni_frente = `${crypto.randomUUID()}-${file.fieldname}.${tipo_de_archivo}`
+    const nombre_archivo_dni_frente = `${nro_documento}-${crypto.randomUUID()}-${file.fieldname}.${tipo_de_archivo}`
+    return await s3Service.uploadToS3(
+        file.buffer,
+        nombre_archivo_dni_frente,
+        file.mimetype,
+        'usuarios',
+        nro_documento
+    )
+};
+
+const updateImagenFrenteAUnUsuario = async ( imagenUrl, nro_documento) => {
+    await prisma.users.update({
+        where: {
+            documentNumber: nro_documento
+        },
+        data: {
+            documentFrontImage: imagenUrl
+        }
+    })
+
+    const tipo_de_archivo = obtenerExtensionArchivo(file)
+    const nombre_archivo_dni_frente = `${nro_documento}-${crypto.randomUUID()}-${file.fieldname}.${tipo_de_archivo}`
     return await s3Service.uploadToS3(
         file.buffer,
         nombre_archivo_dni_frente,
@@ -347,5 +368,6 @@ export default {
     obtenerTodosLosUsuariosConDiferencias,
     verificarExistenciaDeUsuario,
     obtenerUsuariosParaSorteo,
-    obtenerTodosLosUsuariosConInteresEnComprar
+    obtenerTodosLosUsuariosConInteresEnComprar,
+    updateImagenFrenteAUnUsuario
 };
