@@ -132,7 +132,7 @@ const agregarDiferencias = async (id_usuario, diferencias) => {
     return usuarioActualizado
 }
 
-const crearUsuario = async (usuario, documentBackImage, documentFrontImage) => {
+const crearUsuario = async (usuario, documentFrontImage) => {
     const {
         nombre,
         apellido,
@@ -159,8 +159,7 @@ const crearUsuario = async (usuario, documentBackImage, documentFrontImage) => {
         maritalStatus,
         whatsapp,
         wants_to_buy,
-        documentFrontImage,
-        documentBackImage
+        documentFrontImage
     }
 
     const usuarioCreado = await prisma.users.upsert({
