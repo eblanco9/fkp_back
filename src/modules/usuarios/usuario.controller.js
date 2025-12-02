@@ -166,7 +166,7 @@ const actualizarImagenDniFrente = async (req, res, next) => {
     try {
         const id_usuario = req.params.id_usuario;
         //verifico que el usuario exista
-        obtenerUsuarioNuevo(nro_documento)
+        obtenerUsuarioNuevo(id_usuario)
         const files = actualizarImagenDniFrenteSchema.files.parse(req.files);
         //la imagen nueva debe pisar la anterior
         const result_imagen_dni_frente = await usuarioService.agregarImagenAUnUsuario(files.dni_frente[0],id_usuario)
