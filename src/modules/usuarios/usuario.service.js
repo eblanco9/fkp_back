@@ -334,6 +334,7 @@ const obtenerTodosLosUsuariosConInteresEnComprar = async () => {
             email: usuario.email,
             cellphone: usuario.cellphone,
             whatsapp: usuario.whatsapp,
+            status:usuario.status,
             wants_to_buy: usuario.wants_to_buy,
             has_differences: usuario.has_differences,
             differences: usuario.differences
