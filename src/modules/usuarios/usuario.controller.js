@@ -164,11 +164,13 @@ const obtenerUsuariosParaSorteo = async (req, res, next) => {
 
 const actualizarImagenDniFrente = async (req, res, next) => {
     try {
+
         const nro_documento = req.params.id_usuario;
         //verifico que el usuario exista
         obtenerUsuarioNuevo(nro_documento)
         const files = actualizarImagenDniFrenteSchema.files.parse(req.files);
         //la imagen nueva debe pisar la anterior
+
         const result_imagen_dni_frente = await usuarioService.agregarImagenAUnUsuario(files.dni_frente[0], nro_documento);
         const result = await usuarioService.updateImagenFrenteAUnUsuario(result_imagen_dni_frente.url , nro_documento);
         console.log('Se edito el ID de un user' , result);
