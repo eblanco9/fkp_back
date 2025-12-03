@@ -3,6 +3,7 @@ import prisma from '../../prisma-client.js';
 import s3Service from '../../services/s3.service.js';
 import { obtenerExtensionArchivo } from '../../utils/archivo.js';
 import { Estado } from '../../generated/prisma/index.js';
+import crypto from "crypto";
 
 const obtenerUsuarioAntiguo = async (id_usuario) => {
     const usuario = await prisma.usersOriginal.findUnique({
@@ -131,7 +132,7 @@ const agregarDiferencias = async (id_usuario, diferencias) => {
     return usuarioActualizado
 }
 
-const crearUsuario = async (usuario, documentBackImage, documentFrontImage) => {
+const crearUsuario = async (usuario, documentFrontImage) => {
     const {
         nombre,
         apellido,
@@ -158,8 +159,7 @@ const crearUsuario = async (usuario, documentBackImage, documentFrontImage) => {
         maritalStatus,
         whatsapp,
         wants_to_buy,
-        documentFrontImage,
-        documentBackImage
+        documentFrontImage
     }
 
     const usuarioCreado = await prisma.users.upsert({
@@ -187,7 +187,7 @@ const eliminarUsuario = async (id_usuario) => {
 }
 const agregarImagenAUnUsuario = async (file, nro_documento) => {
     const tipo_de_archivo = obtenerExtensionArchivo(file)
-    const nombre_archivo_dni_frente = `${file.fieldname}.${tipo_de_archivo}`
+    const nombre_archivo_dni_frente = `${nro_documento}-${crypto.randomUUID()}-${file.fieldname}.${tipo_de_archivo}`
     return await s3Service.uploadToS3(
         file.buffer,
         nombre_archivo_dni_frente,
@@ -195,6 +195,17 @@ const agregarImagenAUnUsuario = async (file, nro_documento) => {
         'usuarios',
         nro_documento
     )
+};
+
+const updateImagenFrenteAUnUsuario = async ( imagenUrl, nro_documento) => {
+    await prisma.users.update({
+        where: {
+            documentNumber: nro_documento
+        },
+        data: {
+            documentFrontImage: imagenUrl
+        }
+    })
 };
 
 const eliminarImagenDeUnUsuario = async (key_imagen) => {
@@ -323,6 +334,7 @@ const obtenerTodosLosUsuariosConInteresEnComprar = async () => {
             email: usuario.email,
             cellphone: usuario.cellphone,
             whatsapp: usuario.whatsapp,
+            status:usuario.status,
             wants_to_buy: usuario.wants_to_buy,
             has_differences: usuario.has_differences,
             differences: usuario.differences
@@ -347,5 +359,6 @@ export default {
     obtenerTodosLosUsuariosConDiferencias,
     verificarExistenciaDeUsuario,
     obtenerUsuariosParaSorteo,
-    obtenerTodosLosUsuariosConInteresEnComprar
+    obtenerTodosLosUsuariosConInteresEnComprar,
+    updateImagenFrenteAUnUsuario
 };

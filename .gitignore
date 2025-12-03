@@ -3,3 +3,7 @@ node_modules
 .env
 
 /src/generated/prisma
+.github/workflows/
+.github/workflows/*.yml
+.github/workflows/*.yaml
+.github/workflows/* (cualquier cosa)

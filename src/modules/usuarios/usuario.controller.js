@@ -96,12 +96,12 @@ const crearUsuario = async (req, res, next) => {
         //agrego las imagenes al usuario
         const result_imagen_dni_frente = await usuarioService.agregarImagenAUnUsuario(files.dni_frente[0],body.numero_documento)
         compensations.push(() => usuarioService.eliminarImagenDeUnUsuario(result_imagen_dni_frente.key) )
-        const result_imagen_dni_dorso = await usuarioService.agregarImagenAUnUsuario(files.dni_dorso[0],body.numero_documento)
-        compensations.push(() => usuarioService.eliminarImagenDeUnUsuario(result_imagen_dni_dorso.key) )
+        /* const result_imagen_dni_dorso = await usuarioService.agregarImagenAUnUsuario(files.dni_dorso[0],body.numero_documento)
+        compensations.push(() => usuarioService.eliminarImagenDeUnUsuario(result_imagen_dni_dorso.key) ) */
 
         //creo el usuario en la db
         //falta agregar las url de las imagenes
-        const usuario_creado = await usuarioService.crearUsuario(body,result_imagen_dni_dorso.url,result_imagen_dni_frente.url);
+        const usuario_creado = await usuarioService.crearUsuario(body,result_imagen_dni_frente.url);
         // // un poco innecesario
         // compensations.push(() => usuarioService.eliminarUsuario(usuario_creado.numero_documento))
         // registrar en el historial?
@@ -164,12 +164,16 @@ const obtenerUsuariosParaSorteo = async (req, res, next) => {
 
 const actualizarImagenDniFrente = async (req, res, next) => {
     try {
-        const id_usuario = req.params.id_usuario;
+
+        const nro_documento = req.params.id_usuario;
         //verifico que el usuario exista
         obtenerUsuarioNuevo(nro_documento)
         const files = actualizarImagenDniFrenteSchema.files.parse(req.files);
         //la imagen nueva debe pisar la anterior
-        const result_imagen_dni_frente = await usuarioService.agregarImagenAUnUsuario(files.dni_frente[0],id_usuario)
+
+        const result_imagen_dni_frente = await usuarioService.agregarImagenAUnUsuario(files.dni_frente[0], nro_documento);
+        const result = await usuarioService.updateImagenFrenteAUnUsuario(result_imagen_dni_frente.url , nro_documento);
+        console.log('Se edito el ID de un user' , result);
         const response = {
             "message": "Imagen actualizada exitosamente",
             "imageUrl": result_imagen_dni_frente.url
