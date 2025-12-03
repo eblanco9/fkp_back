@@ -63,8 +63,8 @@ jobs:
             npm run generate
            
             echo "🔁 Reiniciando aplicación con PM2..."
-            pm2 delete ws_fkp || true
-            pm2 start npm --name ws_fkp -- run prod
+            pm2 delete all
+            npm run prod
 
             echo "✅ Deploy completado correctamente."
           EOF
