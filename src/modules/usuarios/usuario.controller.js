@@ -153,6 +153,15 @@ const obtenerTodosLosUsuariosConDiferencias = async (req, res, next) => {
     }   
 }
 
+const obtenerTodosLosUsuarios = async (req, res, next) => {
+    try {
+        const result = await usuarioService.obtenerTodosLosUsuarios();
+        res.json(result);
+    } catch (error) {
+        next(error)
+    }   
+}
+
 const obtenerUsuariosParaSorteo = async (req, res, next) => {
     try {
         const result = await usuarioService.obtenerUsuariosParaSorteo();
@@ -207,5 +216,6 @@ export default {
     verificarExistenciaDeUsuario,
     obtenerUsuariosParaSorteo,
     actualizarImagenDniFrente,
-    obtenerTodosLosUsuariosConInteresEnComprar
+    obtenerTodosLosUsuariosConInteresEnComprar,
+    obtenerTodosLosUsuarios
 };

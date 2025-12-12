@@ -253,6 +253,35 @@ export const obtenerTodosLosUsuariosConDiferencias = async () => {
 
 }
 
+export const obtenerTodosLosUsuarios = async () => {
+    const usuarios = await prisma.users.findMany({
+        where: {
+            status : ["approved", "rejected"]
+        }
+    })
+
+    const response = usuarios.map((usuario) => {
+        return {
+            id: usuario.id,
+            documentNumber: usuario.documentNumber,
+            firstName: usuario.firstName,
+            lastName: usuario.lastName,
+            status : usuario.status,
+            birthDate: usuario.birthDate,
+            address: usuario.address,
+            email: usuario.email,
+            cellphone: usuario.cellphone,
+            whatsapp: usuario.whatsapp,
+            wants_to_buy: usuario.wants_to_buy,
+            has_differences: usuario.has_differences,
+            differences: usuario.differences
+        }
+    })
+
+    return response
+
+}
+
 const obtenerUsuariosParaSorteo = async () => {
     const usuarios = await prisma.users.findMany({
         where: {
@@ -360,5 +389,6 @@ export default {
     verificarExistenciaDeUsuario,
     obtenerUsuariosParaSorteo,
     obtenerTodosLosUsuariosConInteresEnComprar,
-    updateImagenFrenteAUnUsuario
+    updateImagenFrenteAUnUsuario,
+    obtenerTodosLosUsuarios
 };
