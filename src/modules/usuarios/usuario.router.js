@@ -113,6 +113,11 @@ router.get(
     usuarioController.obtenerTodosLosUsuariosConInteresEnComprar
 )
 
+router.get(
+    '/obtener-todos-los-usuarios',
+    usuarioController.obtenerTodosLosUsuarios
+)
+
 router.use('/:id_usuario/historial', historialRouter)
 
 export default router;
