@@ -255,8 +255,10 @@ export const obtenerTodosLosUsuariosConDiferencias = async () => {
 
 export const obtenerTodosLosUsuarios = async () => {
     const usuarios = await prisma.users.findMany({
-        status: {
-            in: ["approved", "rejected"]
+        where: {
+            status: {
+                in: ["approved", "rejected"]
+            }
         }
     })
 
