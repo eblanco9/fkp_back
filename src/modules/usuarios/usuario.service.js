@@ -197,7 +197,7 @@ const agregarImagenAUnUsuario = async (file, nro_documento) => {
     )
 };
 
-const updateImagenFrenteAUnUsuario = async ( imagenUrl, nro_documento) => {
+const updateImagenFrenteAUnUsuario = async (imagenUrl, nro_documento) => {
     await prisma.users.update({
         where: {
             documentNumber: nro_documento
@@ -255,8 +255,8 @@ export const obtenerTodosLosUsuariosConDiferencias = async () => {
 
 export const obtenerTodosLosUsuarios = async () => {
     const usuarios = await prisma.users.findMany({
-        where: {
-            status : ["approved", "rejected"]
+        status: {
+            in: ["approved", "rejected"]
         }
     })
 
@@ -266,7 +266,7 @@ export const obtenerTodosLosUsuarios = async () => {
             documentNumber: usuario.documentNumber,
             firstName: usuario.firstName,
             lastName: usuario.lastName,
-            status : usuario.status,
+            status: usuario.status,
             birthDate: usuario.birthDate,
             address: usuario.address,
             email: usuario.email,
@@ -347,7 +347,7 @@ const verificarExistenciaDeUsuario = async (id_usuario) => {
 
 const obtenerTodosLosUsuariosConInteresEnComprar = async () => {
     const usuarios = await prisma.users.findMany({
-        where:{
+        where: {
             wants_to_buy: true
         }
     })
@@ -363,7 +363,7 @@ const obtenerTodosLosUsuariosConInteresEnComprar = async () => {
             email: usuario.email,
             cellphone: usuario.cellphone,
             whatsapp: usuario.whatsapp,
-            status:usuario.status,
+            status: usuario.status,
             wants_to_buy: usuario.wants_to_buy,
             has_differences: usuario.has_differences,
             differences: usuario.differences
