@@ -125,6 +125,7 @@ export const crearUsuarioSchema = {
           `El numero_documento: ${obj?.input} debe ser un string numérico`,
       }),
     domicilio: z.string({ error: "El domicilio es requerido" }),
+    barrio: z.string({ error: "El barrio es requerido" }),
     email: z.email({ error: "El email es requerido" }),
     celular: z.string({ error: "El celular es requerido" }),
     whatsapp: z
