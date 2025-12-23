@@ -13,22 +13,58 @@ const DEFAULT_FROM_EMAIL = "hurdo@mikasawor.com";
 const approved_email_template = {
     subject: `Bo informashon a wòrdu verifiká ku éksito!`,
     text: `
-Konta [Nombre], Danki pa aktualisá bo informashon ku Fundashon Kas Popular (FKP). 
-Nos ta konfirmá ku bo informashon a keda verifiká ku éksito i ku awor bo ta partisipá na e sorteo eksklusivo pa hürdónan di FKP.
-Nos lo tene bo informá tokante e próksimo aktualisashonnan i e ganadónan.
-E sorteo lo ta dia 30 di desèmber pa 3:00 PM.
-Premionan di e sorteo:
+Konta [Nombre],
 
-Promé premio
-Gift Card di Mangusa Supermarket – XCG 2,500
+Danki pa aktualisá bo informashon ku Fundashon Kas Popular (FKP). Nos ta konfirmá ku
+bo informashon a keda verifiká ku éksito i ku awor bo ta partisipá na e rifanan eksklusivo
+pa hürdónan di FKP.
 
-Di dos premio
-Gift Card di Building Depot – XCG 1,500
+Tambe, si bo ta interesá den kumpra e kas ku bo ta hür, nos ta kompartí e pasonan pa sigui
+den e programa “Kumpra kas di Gobièrnu ku bo ta hür”.
 
-Di tres premio
-Gift Card di Boolchand's – XCG 1,000
-Un kordial saludo, 
-Tim di FKP`
+Barionan ku tin kas disponibel pa bende,
+
+e kasnan disponibel pa benta den kuadro di e programa aki ta situá den e siguiente
+barionan:
+
+• Koraalspecht • Brievengat • Seru Domi • Mundo Nobo • Jandoret • De Savaan Bieu •
+Dominguito • Nieuw Nederland • Mari Pampoen • Steenrijk • Vredenberg • Cher-Asile •
+Saliña • Kintjan
+
+Importante: Si bo kas ta den un otro bario, e no ta kualifiká pa kumpra.
+
+Dokumentashon Rekerí
+    E. Dokumentonan
+        • Personal Buki di matrimonio, sertifikado di registro sivil (volledige uitreksel), òf
+        buki di famia.
+        • Sédula/ Reibeweis òf pasaporte vigente
+    F. Sertifikashon di Kadaster
+        • Karta di Kadaster ku ta bisa ku bo no ta doño di ningun otro propiedat
+        (E dokumento aki ta wòrdu optené serka Kadaster:
+        https://share.google/lSDzpRVU1pBVMWz92)
+    G. Prueba di Entrada (Si bo ta kasá, dokumentonan di entrada di tur dos persona ta
+    nesesario)
+        • Último dos estadonan di kuenta di banko.
+        • Karta di trabou.
+        • Prueba salarial di e último dos lunanan.
+        • Saldo di fiansa na banko òf otro instituto (si ta aplikabel)
+    H. Si bo ta traha pa bo mes:
+        • Deklarashon di Inspekshon di Impuesto indikando entrada di e último 2
+        añanan.
+        • Inskripshon na Kámara di Komèrsio (Kamer van Koophandel)
+
+Siguiente paso
+
+Na momentu ku bo tin tur e dokumentashon, por fabor aneksá esakinan na bo kontesta
+riba e e-mail aki: hurdo@mikasawor.com i mand’é pa nos.
+
+Nos tim lo hasi un revishon i si e wòrdu aprobá, bo por traha un sita ku FKP pa sigui ku e
+proseso.
+
+Si bo tin kualke pregunta, bo por manda un e-mail aki: hurdo@mikasawor.com
+Saludo,
+
+Ekipo di FKP`
     ,
     html: `
    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -630,7 +666,7 @@ export const sendEmail = async (params) => {
 
 export const enviarEmailDeAprobacion = async (email, nombre) => {
     const texto = approved_email_template.text.replace('[Nombre]', nombre);
-    const html = approved_email_template.html.replace('[Nombre]', nombre);
+    // const html = approved_email_template.html.replace('[Nombre]', nombre);
 
     const mailOptions = {
         Source: DEFAULT_FROM_EMAIL,
@@ -639,7 +675,7 @@ export const enviarEmailDeAprobacion = async (email, nombre) => {
             Subject: { Data: approved_email_template.subject },
             Body: {
                 Text: { Data: texto },
-                Html: { Data: html },   // 👈 AGREGADO
+                // Html: { Data: html },   // 👈 AGREGADO
             },
         },
     };
