@@ -16,8 +16,7 @@ const approved_email_template = {
 Konta [Nombre],
 
 Danki pa aktualisá bo informashon ku Fundashon Kas Popular (FKP). Nos ta konfirmá ku
-bo informashon a keda verifiká ku éksito i ku awor bo ta partisipá na e rifanan eksklusivo
-pa hürdónan di FKP.
+bo informashon a keda verifiká ku éksito.
 
 Tambe, si bo ta interesá den kumpra e kas ku bo ta hür, nos ta kompartí e pasonan pa sigui
 den e programa “Kumpra kas di Gobièrnu ku bo ta hür”.
@@ -34,24 +33,28 @@ Saliña • Kintjan
 Importante: Si bo kas ta den un otro bario, e no ta kualifiká pa kumpra.
 
 Dokumentashon Rekerí
-    E. Dokumentonan
-        • Personal Buki di matrimonio, sertifikado di registro sivil (volledige uitreksel), òf
-        buki di famia.
-        • Sédula/ Reibeweis òf pasaporte vigente
-    F. Sertifikashon di Kadaster
-        • Karta di Kadaster ku ta bisa ku bo no ta doño di ningun otro propiedat
-        (E dokumento aki ta wòrdu optené serka Kadaster:
-        https://share.google/lSDzpRVU1pBVMWz92)
-    G. Prueba di Entrada (Si bo ta kasá, dokumentonan di entrada di tur dos persona ta
-    nesesario)
-        • Último dos estadonan di kuenta di banko.
-        • Karta di trabou.
-        • Prueba salarial di e último dos lunanan.
-        • Saldo di fiansa na banko òf otro instituto (si ta aplikabel)
-    H. Si bo ta traha pa bo mes:
-        • Deklarashon di Inspekshon di Impuesto indikando entrada di e último 2
-        añanan.
-        • Inskripshon na Kámara di Komèrsio (Kamer van Koophandel)
+
+I. Dokumentonan
+    • Personal Buki di matrimonio, sertifikado di registro sivil (volledige uitreksel), òf
+    buki di famia.
+    • Sédula/ Reibeweis òf pasaporte vigente
+
+J. Sertifikashon di Kadaster
+    • Karta di Kadaster ku ta bisa ku bo no ta doño di ningun otro propiedat
+    (E dokumento aki ta wòrdu optené serka Kadaster:
+    https://share.google/lSDzpRVU1pBVMWz92)
+
+K. Prueba di Entrada (Si bo ta kasá, dokumentonan di entrada di tur dos persona ta
+nesesario)
+    • Último dos estadonan di kuenta di banko.
+    • Karta di trabou.
+    • Prueba salarial di e último dos lunanan.
+    • Saldo di fiansa na banko òf otro instituto (si ta aplikabel)
+
+L. Si bo ta traha pa bo mes:
+    • Deklarashon di Inspekshon di Impuesto indikando entrada di e último 2
+    añanan.
+    • Inskripshon na Kámara di Komèrsio (Kamer van Koophandel)
 
 Siguiente paso
 
@@ -62,8 +65,8 @@ Nos tim lo hasi un revishon i si e wòrdu aprobá, bo por traha un sita ku FKP p
 proseso.
 
 Si bo tin kualke pregunta, bo por manda un e-mail aki: hurdo@mikasawor.com
-Saludo,
 
+Saludo,
 Ekipo di FKP`
     ,
     html: `
