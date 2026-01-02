@@ -118,6 +118,12 @@ router.get(
     usuarioController.obtenerTodosLosUsuarios
 )
 
+router.delete(
+    '/eliminar-usuario/:id_usuario',
+    usuarioController.eliminarUsuario
+)
+
 router.use('/:id_usuario/historial', historialRouter)
+
 
 export default router;
