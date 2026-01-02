@@ -88,6 +88,10 @@ const rechazarUsuario = async (req, res, next) => {
     }
 };
 
+const eliminarUsuario = async (req, res, next) => {
+    await usuarioService.eliminarUsuario(req.params.id_usuario);
+}
+
 const crearUsuario = async (req, res, next) => {
     const compensations = [];
     try {
@@ -217,5 +221,6 @@ export default {
     obtenerUsuariosParaSorteo,
     actualizarImagenDniFrente,
     obtenerTodosLosUsuariosConInteresEnComprar,
-    obtenerTodosLosUsuarios
+    obtenerTodosLosUsuarios,
+    eliminarUsuario
 };
