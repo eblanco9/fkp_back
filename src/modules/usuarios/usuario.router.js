@@ -19,7 +19,7 @@ import { checkPermissionByRoles } from '../../middleware/checkPermission.js';
 
 const upload = multer({
     storage: multer.memoryStorage(), // o donde guardes los archivos temporalmente
-    limits: { fileSize: 5 * 1024 * 1024 }, // ejemplo: 5MB máximo
+    limits: { fileSize: 15 * 1024 * 1024 }, // ejemplo: 5MB máximo
 });
 
 const router = Router();
