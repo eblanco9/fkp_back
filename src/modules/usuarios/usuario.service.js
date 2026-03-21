@@ -120,6 +120,11 @@ const rechazarUsuario = async (id_usuario) => {
 
 const agregarDiferencias = async (id_usuario, diferencias) => {
     const usuario = await obtenerUsuarioNuevo(id_usuario)
+
+    if (!usuario) {
+        throw new HttpError(404, "No user found");
+    }
+
     const usuarioActualizado = await prisma.users.update({
         where: {
             documentNumber: id_usuario
@@ -131,6 +136,24 @@ const agregarDiferencias = async (id_usuario, diferencias) => {
     })
     return usuarioActualizado
 }
+
+const setearOwner = async (id_usuario, owner) => {
+    const usuario = await obtenerUsuarioNuevo(id_usuario)
+
+    if (!usuario) {
+        throw new HttpError(404, "No user found");
+    }
+    const usuarioActualizado = await prisma.users.update({
+        where: {
+            documentNumber: id_usuario
+        },
+        data: {
+            owner: owner
+        }
+    })
+    return usuarioActualizado
+}
+
 
 const crearUsuario = async (usuario, documentFrontImage) => {
     const {
@@ -280,7 +303,8 @@ export const obtenerTodosLosUsuarios = async () => {
             whatsapp: usuario.whatsapp,
             wants_to_buy: usuario.wants_to_buy,
             has_differences: usuario.has_differences,
-            differences: usuario.differences
+            differences: usuario.differences,
+            owner: usuario.owner
         }
     })
 
@@ -373,7 +397,8 @@ const obtenerTodosLosUsuariosConInteresEnComprar = async () => {
             status: usuario.status,
             wants_to_buy: usuario.wants_to_buy,
             has_differences: usuario.has_differences,
-            differences: usuario.differences
+            differences: usuario.differences,
+            owner: usuario.owner
         }
     })
 
@@ -398,4 +423,5 @@ export default {
     obtenerTodosLosUsuariosConInteresEnComprar,
     updateImagenFrenteAUnUsuario,
     obtenerTodosLosUsuarios,
+    setearOwner
 };

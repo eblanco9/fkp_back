@@ -168,6 +168,20 @@ export const agregarDiferenciasSchema = {
   }),
 }
 
+export const setearOwnerSchema = {
+  params: z.object({
+    id_usuario: z
+      .string()
+      .refine((id) => !isNaN(id), {
+        message: (obj) =>
+          `El param id_usuario: ${obj?.input} debe ser un string numérico`,
+      })
+  }),
+  body: z.object({
+    owner: z.string({ error: "El owner es requerido" }),
+  }),
+}
+
 export const actualizarImagenDniFrenteSchema = {
   params: z.object({
     id_usuario: z

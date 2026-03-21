@@ -33,6 +33,7 @@ model Users {
   birthDate           DateTime?               @db.Date
   address             String?
   barrio              String?
+  owner               String?
   cellphone           String?
   whatsapp            Boolean?                @default(false)
   wants_to_buy        Boolean?                @default(false)

@@ -1,10 +1,11 @@
 import usuarioService from './usuario.service.js';
-import { 
+import {
     obtenerUsuariosSchema,
     crearUsuarioSchema,
     agregarDiferenciasSchema,
     rechazarUsuarioSchema,
-    actualizarImagenDniFrenteSchema
+    actualizarImagenDniFrenteSchema,
+    setearOwnerSchema
 } from './usuario.schema.js';
 import { enviarEmailDeAprobacion, enviarEmailDeRechazo } from '../../services/email.service.js';
 
@@ -65,7 +66,7 @@ const aprobarUsuario = async (req, res, next) => {
         const id_usuario = req.params.id_usuario;
         const usuario = await usuarioService.obtenerUsuarioNuevo(id_usuario);
         // intento enviar email
-        await enviarEmailDeAprobacion(usuario.email,usuario.firstName)
+        await enviarEmailDeAprobacion(usuario.email, usuario.firstName)
 
         const result = await usuarioService.aprobarUsuario(id_usuario);
         res.json(result);
@@ -80,7 +81,7 @@ const rechazarUsuario = async (req, res, next) => {
         const body = rechazarUsuarioSchema.body.parse(req.body);
         const usuario = await usuarioService.obtenerUsuarioNuevo(id_usuario);
         // intento enviar email
-        await enviarEmailDeRechazo(usuario.email,usuario.firstName,body.motivo)
+        await enviarEmailDeRechazo(usuario.email, usuario.firstName, body.motivo)
         const result = await usuarioService.rechazarUsuario(id_usuario);
         res.json(result);
     } catch (err) {
@@ -98,14 +99,14 @@ const crearUsuario = async (req, res, next) => {
         const body = crearUsuarioSchema.body.parse(req.body);
         const files = crearUsuarioSchema.files.parse(req.files);
         //agrego las imagenes al usuario
-        const result_imagen_dni_frente = await usuarioService.agregarImagenAUnUsuario(files.dni_frente[0],body.numero_documento)
-        compensations.push(() => usuarioService.eliminarImagenDeUnUsuario(result_imagen_dni_frente.key) )
+        const result_imagen_dni_frente = await usuarioService.agregarImagenAUnUsuario(files.dni_frente[0], body.numero_documento)
+        compensations.push(() => usuarioService.eliminarImagenDeUnUsuario(result_imagen_dni_frente.key))
         /* const result_imagen_dni_dorso = await usuarioService.agregarImagenAUnUsuario(files.dni_dorso[0],body.numero_documento)
         compensations.push(() => usuarioService.eliminarImagenDeUnUsuario(result_imagen_dni_dorso.key) ) */
 
         //creo el usuario en la db
         //falta agregar las url de las imagenes
-        const usuario_creado = await usuarioService.crearUsuario(body,result_imagen_dni_frente.url);
+        const usuario_creado = await usuarioService.crearUsuario(body, result_imagen_dni_frente.url);
         // // un poco innecesario
         // compensations.push(() => usuarioService.eliminarUsuario(usuario_creado.numero_documento))
         // registrar en el historial?
@@ -114,7 +115,7 @@ const crearUsuario = async (req, res, next) => {
         //si falla alguna de las acciones, se ejecutan las compensaciones (como un rollback)
         //a futuro crear una funcion para esto
         try {
-            for (const compensation of compensations.reverse()){
+            for (const compensation of compensations.reverse()) {
                 console.log("ejecuto compensacion")
                 await compensation();
                 console.log("fin de compensacion")
@@ -130,13 +131,24 @@ const crearUsuario = async (req, res, next) => {
 const agregarDiferencias = async (req, res, next) => {
     try {
         const id_usuario = req.params.id_usuario;
-        const {diferencias} = agregarDiferenciasSchema.body.parse(req.body);
-        const result = await usuarioService.agregarDiferencias(id_usuario,diferencias);
+        const { diferencias } = agregarDiferenciasSchema.body.parse(req.body);
+        const result = await usuarioService.agregarDiferencias(id_usuario, diferencias);
         res.json(result);
     } catch (err) {
         next(err);
     }
 };
+
+const setearOwner = async (req, res, next) => {
+    try {
+        const id_usuario = req.params.id_usuario;
+        const { owner } = setearOwnerSchema.body.parse(req.body);
+        const result = await usuarioService.setearOwner(id_usuario, owner);
+        res.json(result);
+    } catch (err) {
+        next(err);
+    }
+}
 
 const obtenerUsuarioNuevoYAntiguo = async (req, res, next) => {
     try {
@@ -154,7 +166,7 @@ const obtenerTodosLosUsuariosConDiferencias = async (req, res, next) => {
         res.json(result);
     } catch (error) {
         next(error)
-    }   
+    }
 }
 
 const obtenerTodosLosUsuarios = async (req, res, next) => {
@@ -163,7 +175,7 @@ const obtenerTodosLosUsuarios = async (req, res, next) => {
         res.json(result);
     } catch (error) {
         next(error)
-    }   
+    }
 }
 
 const obtenerUsuariosParaSorteo = async (req, res, next) => {
@@ -185,8 +197,8 @@ const actualizarImagenDniFrente = async (req, res, next) => {
         //la imagen nueva debe pisar la anterior
 
         const result_imagen_dni_frente = await usuarioService.agregarImagenAUnUsuario(files.dni_frente[0], nro_documento);
-        const result = await usuarioService.updateImagenFrenteAUnUsuario(result_imagen_dni_frente.url , nro_documento);
-        console.log('Se edito el ID de un user' , result);
+        const result = await usuarioService.updateImagenFrenteAUnUsuario(result_imagen_dni_frente.url, nro_documento);
+        console.log('Se edito el ID de un user', result);
         const response = {
             "message": "Imagen actualizada exitosamente",
             "imageUrl": result_imagen_dni_frente.url
@@ -222,5 +234,6 @@ export default {
     actualizarImagenDniFrente,
     obtenerTodosLosUsuariosConInteresEnComprar,
     obtenerTodosLosUsuarios,
-    eliminarUsuario
+    eliminarUsuario,
+    setearOwner
 };
