@@ -9,8 +9,25 @@ import {
 } from './usuario.schema.js';
 import { enviarEmailDeAprobacion, enviarEmailDeRechazo } from '../../services/email.service.js';
 
+const actualizarBarrioDeUnUsuario = async (req, res, next) => {
+    try {
+        const id_usuario = req.params.id_usuario;
+        const { barrio } = req.body;
+        const result = await usuarioService.actualizarBarrioDeUnUsuario(id_usuario, barrio);
+        res.json(result);
+    } catch (error) {
+        next(error)
+    }
+}
 
-
+const buscarUsuariosController = async (req, res, next) => {
+    try {
+        const data = await usuarioService.buscarUsuarios(req.query);
+        res.json(data);
+    } catch (error) {
+        next(error);
+    }
+};
 
 const obtenerUsuarioAntiguo = async (req, res, next) => {
     try {
@@ -235,5 +252,7 @@ export default {
     obtenerTodosLosUsuariosConInteresEnComprar,
     obtenerTodosLosUsuarios,
     eliminarUsuario,
-    setearOwner
+    setearOwner,
+    buscarUsuariosController,
+    actualizarBarrioDeUnUsuario
 };

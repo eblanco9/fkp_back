@@ -68,6 +68,54 @@ export const obtenerUsuariosSchema = {
   })
 };
 
+export const actualizarBarrioDeUnUsuarioSchema = {
+    params: z.object({
+        id_usuario: z
+            .string()
+            .refine((id) => !isNaN(id), {
+                message: (obj) =>
+                    `El param id_usuario: ${obj?.input} debe ser un string numérico`,
+            }),
+    }),
+    body: z.object({
+        barrio: z.string({ error: "El barrio es requerido" }),
+    }),
+}
+
+export const buscarUsuariosSchema = {
+  query: z.object({
+    page: z
+      .string()
+      .refine((id) => !isNaN(id), {
+        message: (obj) =>
+          `La query page: ${obj?.input} debe ser un string numérico`,
+      })
+      .transform((id) => parseInt(id)),
+
+    limit: z
+      .string()
+      .refine((id) => !isNaN(id), {
+        message: (obj) =>
+          `La query limit: ${obj?.input} debe ser un string numérico`,
+      })
+      .transform((id) => parseInt(id)),
+
+    estado: z
+      .enum(Estado, {
+        message: `La query estado debe ser un estado valido: ${Object.values(Estado).join(", ")}`,
+      })
+      .optional(),
+
+    search: z
+      .string()
+      .optional()
+      .transform((val) => (val ? val.trim() : val))
+      .refine((val) => val === undefined || val.length > 0, {
+        message: "La query search no puede ser vacía",
+      }),
+  }),
+};
+
 export const aprobarUsuarioSchema = {
   params: z.object({
     id_usuario: z

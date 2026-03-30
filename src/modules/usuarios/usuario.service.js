@@ -404,6 +404,138 @@ const obtenerTodosLosUsuariosConInteresEnComprar = async () => {
 
     return response
 }
+
+const actualizarBarrioDeUnUsuario = async (id_usuario, nuevo_barrio) => {
+    const usuario = await obtenerUsuarioNuevo(id_usuario)
+
+    if (!usuario) {
+        throw new HttpError(404, "No user found");
+    }
+
+    const usuarioActualizado = await prisma.users.update({
+        where: {
+            documentNumber: id_usuario
+        },
+        data: {
+            barrio: nuevo_barrio
+        } 
+    })
+    return usuarioActualizado
+}
+
+const buscarUsuarios = async (query) => {
+    const { search = "", page = 1, limit = 10, estado } = query;
+
+    const pageNumber = parseInt(page);
+    const pageSize = parseInt(limit);
+
+    const searchTrimmed = search.trim();
+    const searchTerms = searchTrimmed.split(" ").filter(Boolean);
+
+    let where = {
+        ...(estado ? { status: estado } : {}),
+    };
+
+    if (searchTrimmed) {
+        where.OR = [
+            // DNI
+            {
+                documentNumber: {
+                    contains: searchTrimmed,
+                    mode: "insensitive",
+                },
+            },
+            // Nombre completo (ej: "juan perez")
+            {
+                firstName: {
+                    contains: searchTrimmed,
+                    mode: "insensitive",
+                },
+            },
+            {
+                lastName: {
+                    contains: searchTrimmed,
+                    mode: "insensitive",
+                },
+            },
+            // Dirección (clave para múltiples palabras)
+            {
+                address: {
+                    contains: searchTrimmed,
+                    mode: "insensitive",
+                },
+            },
+        ];
+
+        // 🔥 Solo si tiene exactamente 2 palabras → intento nombre + apellido
+        if (searchTerms.length === 2) {
+            const [nombre, apellido] = searchTerms;
+
+            where.OR.push({
+                AND: [
+                    {
+                        firstName: {
+                            contains: nombre,
+                            mode: "insensitive",
+                        },
+                    },
+                    {
+                        lastName: {
+                            contains: apellido,
+                            mode: "insensitive",
+                        },
+                    },
+                ],
+            });
+        }
+
+        // 🔥 Si tiene más de 2 palabras → búsqueda flexible (tipo Google)
+        if (searchTerms.length > 2) {
+            where.OR.push({
+                AND: searchTerms.map((term) => ({
+                    OR: [
+                        {
+                            firstName: {
+                                contains: term,
+                                mode: "insensitive",
+                            },
+                        },
+                        {
+                            lastName: {
+                                contains: term,
+                                mode: "insensitive",
+                            },
+                        },
+                        {
+                            address: {
+                                contains: term,
+                                mode: "insensitive",
+                            },
+                        },
+                    ],
+                })),
+            });
+        }
+    }
+
+    const usuarios = await prisma.users.findMany({
+        where,
+        skip: (pageNumber - 1) * pageSize,
+        take: pageSize,
+        orderBy: { createdAt: "desc" },
+    });
+
+    const total = await prisma.users.count({ where });
+
+    return {
+        page: pageNumber,
+        limit: pageSize,
+        total,
+        totalPages: Math.ceil(total / pageSize),
+        usuarios,
+    };
+};
+
 export default {
     obtenerUsuarioAntiguo,
     obtenerUsuarioNuevo,
@@ -423,5 +555,7 @@ export default {
     obtenerTodosLosUsuariosConInteresEnComprar,
     updateImagenFrenteAUnUsuario,
     obtenerTodosLosUsuarios,
-    setearOwner
+    setearOwner,
+    buscarUsuarios,
+    actualizarBarrioDeUnUsuario
 };
