@@ -20,7 +20,7 @@ const actualizarBarrioDeUnUsuario = async (req, res, next) => {
     }
 }
 
-const buscarUsuariosController = async (req, res, next) => {
+const buscarUsuarios= async (req, res, next) => {
     try {
         const data = await usuarioService.buscarUsuarios(req.query);
         res.json(data);
@@ -253,6 +253,6 @@ export default {
     obtenerTodosLosUsuarios,
     eliminarUsuario,
     setearOwner,
-    buscarUsuariosController,
+    buscarUsuarios,
     actualizarBarrioDeUnUsuario
 };
