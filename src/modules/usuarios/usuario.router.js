@@ -10,7 +10,9 @@ import {
     agregarDiferenciasSchema,
     obtenerUsuarioNuevoYAntiguoSchema,
     actualizarImagenDniFrenteSchema,
-    setearOwnerSchema
+    setearOwnerSchema,
+    buscarUsuariosSchema,
+    actualizarBarrioDeUnUsuarioSchema
 } from './usuario.schema.js';
 import { validateRequest } from '../../middleware/validateRequestHandle.js';
 import historialRouter from '../historial/historial.router.js'
@@ -70,6 +72,18 @@ router.get(
     validateRequest(obtenerUsuariosSchema), 
     usuarioController.obtenerUsuarios
 );
+
+router.get(
+    '/buscar-usuarios',
+    validateRequest(buscarUsuariosSchema), 
+    usuarioController.buscarUsuarios
+);
+
+router.post(
+    '/actualizar-barrio/:id_usuario',
+    validateRequest(actualizarBarrioDeUnUsuarioSchema),
+    usuarioController.actualizarBarrioDeUnUsuario
+)
 
 router.post(
     '/aprobar-usuario/:id_usuario', 
