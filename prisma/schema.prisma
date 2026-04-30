@@ -43,6 +43,7 @@ model Users {
   origin              String?
   documentFrontImage  String?
   documentBackImage   String?
+  batch               Int? //sirve para identificar a los user por lote
   status              Estado?                 @default(pending)
   createdAt           DateTime                @default(now())
   updatedAt           DateTime                @updatedAt

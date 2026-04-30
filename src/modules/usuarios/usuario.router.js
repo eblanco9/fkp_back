@@ -12,7 +12,8 @@ import {
     actualizarImagenDniFrenteSchema,
     setearOwnerSchema,
     buscarUsuariosSchema,
-    actualizarBarrioDeUnUsuarioSchema
+    actualizarBarrioDeUnUsuarioSchema,
+    obtenerCantidadDeUsuariosSegunEstadoSchema
 } from './usuario.schema.js';
 import { validateRequest } from '../../middleware/validateRequestHandle.js';
 import historialRouter from '../historial/historial.router.js'
@@ -52,6 +53,7 @@ router.get(
 
 router.get(
     '/cantidad-de-usuarios-segun-estado', 
+    validateRequest(obtenerCantidadDeUsuariosSegunEstadoSchema),
     usuarioController.obtenerCantidadDeUsuariosSegunEstado
 )
 

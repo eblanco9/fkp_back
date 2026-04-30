@@ -58,13 +58,19 @@ export const obtenerUsuariosSchema = {
     estado: z
       // .string()
       .enum(Estado, { message: `La query estado debe ser un estado valido: ${Object.values(Estado).join(", ")}` })
-      .optional()
+      .optional(),
       // .refine(val => val === undefined || ["APPROVE", "PENDING", "REJECT"].includes(val), {
 
       //   message: (obj) =>
       //     `La query estado: ${obj?.input} no es un estado valido`,
       // })
-      
+    batch: z
+      .string({error: "La query batch es requerido"})
+      .refine((id) => !isNaN(id), {
+        message: (obj) =>
+          `La query batch: ${obj?.input} debe ser un string numérico`,
+      })
+      .transform((id) => parseInt(id)),
   })
 };
 
@@ -85,7 +91,7 @@ export const actualizarBarrioDeUnUsuarioSchema = {
 export const buscarUsuariosSchema = {
   query: z.object({
     page: z
-      .string()
+      .string({ error: "La query page es requerida" })
       .refine((id) => !isNaN(id), {
         message: (obj) =>
           `La query page: ${obj?.input} debe ser un string numérico`,
@@ -93,7 +99,7 @@ export const buscarUsuariosSchema = {
       .transform((id) => parseInt(id)),
 
     limit: z
-      .string()
+      .string({ error: "La query limit es requerida" })
       .refine((id) => !isNaN(id), {
         message: (obj) =>
           `La query limit: ${obj?.input} debe ser un string numérico`,
@@ -113,6 +119,14 @@ export const buscarUsuariosSchema = {
       .refine((val) => val === undefined || val.length > 0, {
         message: "La query search no puede ser vacía",
       }),
+    batch: z
+      .string({error: "La query batch es requerido"})
+      .refine((id) => !isNaN(id), {
+        message: (obj) =>
+          `La query batch: ${obj?.input} debe ser un string numérico`,
+      })
+      .transform((id) => parseInt(id)),
+      
   }),
 };
 
@@ -252,5 +266,17 @@ export const actualizarImagenDniFrenteSchema = {
         (arr) => arr.every(f => f.size <= 5 * 1024 * 1024),
         { message: 'dni frente no puede superar 5MB' } // aquí ya sabes que es documento_identidad
       ),
+  }),
+}
+
+export const obtenerCantidadDeUsuariosSegunEstadoSchema = {
+  query: z.object({
+    batch: z
+      .string({error: "La query batch es requerido"})
+      .refine((id) => !isNaN(id), {
+        message: (obj) =>
+          `El param batch: ${obj?.input} debe ser un string numérico`,
+      })
+      .transform((id) => parseInt(id)),
   }),
 }

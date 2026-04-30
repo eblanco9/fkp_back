@@ -54,20 +54,24 @@ const obtenerUsuarioNuevo = async (id_usuario) => {
 }
 
 const obtenerUsuarios = async (query) => {
-    const { page = 1, limit = 10, estado } = query;
+    const { page = 1, limit = 10, estado, batch} = query;
 
     const pageNumber = parseInt(page);
     const pageSize = parseInt(limit);
 
+    let where = {};
+    if(estado) where.status = estado
+    if(batch) where.batch = batch
+
     const usuarios = await prisma.users.findMany({
-        where: estado ? { status: estado } : {}, // filtrar por estado si viene
+        where, // filtrar por estado si viene
         skip: (pageNumber - 1) * pageSize,
         take: pageSize,
         orderBy: { createdAt: "desc" }
     });
 
     const total = await prisma.users.count({
-        where: estado ? { status: estado } : {}
+        where
     });
 
     return {
@@ -79,8 +83,11 @@ const obtenerUsuarios = async (query) => {
     };
 }
 
-const obtenerCantidadDeUsuariosSegunEstado = async () => {
+const obtenerCantidadDeUsuariosSegunEstado = async (batch) => {
+    let where = {};
+    if(batch) where.batch = batch
     const grouped = await prisma.users.groupBy({
+        where,
         by: ['status'],
         _count: { _all: true },
     });
@@ -424,7 +431,7 @@ const actualizarBarrioDeUnUsuario = async (id_usuario, nuevo_barrio) => {
 }
 
 const buscarUsuarios = async (query) => {
-    const { search = "", page = 1, limit = 10, estado } = query;
+    const { search = "", page = 1, limit = 10, estado, batch } = query;
 
     const pageNumber = parseInt(page);
     const pageSize = parseInt(limit);
@@ -432,9 +439,10 @@ const buscarUsuarios = async (query) => {
     const searchTrimmed = search.trim();
     const searchTerms = searchTrimmed.split(" ").filter(Boolean);
 
-    let where = {
-        ...(estado ? { status: estado } : {}),
-    };
+    let where = {}
+
+    if (estado) where.status = estado
+    if (batch) where.batch = Number(batch)
 
     if (searchTrimmed) {
         where.OR = [
