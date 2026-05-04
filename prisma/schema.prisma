@@ -101,3 +101,23 @@ model UserAdmin {
   role                UserAdminRole           @default(admin)
 }
 
+model BuyerUser {
+  id              Int      @id @default(autoincrement())
+  full_name        String
+  date_of_birth     DateTime
+  address         String
+  phone           String?
+  email           String?  @unique
+
+  crib_number      String?  @unique
+
+  lives_with_someone Boolean  @default(false)
+
+  families        Json?    // JSONB en PostgreSQL
+  documents       Json?    // JSONB en PostgreSQL
+
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  @@map("buyer_users")
+}
