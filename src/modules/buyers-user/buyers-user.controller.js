@@ -4,51 +4,66 @@ const agregarUsuarioComprador = async (req, res, next) => {
     const compensations = [];
     try {
         const archivos_user = req.parsedFiles.user;
+        const data = JSON.parse(req.body.payload);
+        console.log(data);
+        const crib_number = data?.persona?.cribNumber;
+        if(!crib_number){
+            return res.status(400).json({ message: "cribNumber es requerido" });
+        }
+        console.log(crib_number);
         const archivos_fam = req.parsedFiles.families || {};
 
         const documentos_user = [];
         const documentos_fam = [];
         //por todos los archivos del user
-        Object.entries(archivos_user).forEach(([docType, files]) => {
-            //por cada tipo de documento (extracto bancario, recibo de sueldo, declaracion empleador)
+        for (const [docType, files] of Object.entries(archivos_user)) {
             documentos_user[docType] = [];
-            files.forEach(file => {
-                //por cada archivo, agregar logica de agregar y eliminar
-                // const result = buyersUserService.agregarArchivoDelUsuarioDelComprador(file);
-                // compensations.push(() => buyersUserService.eliminarArchivoDelUsuarioDelComprador(result.key))
-                //aca guardar el link del archivo
-                documentos_user[docType].push(file.fieldname);
-            });
-        });
+
+            for (const file of files) {
+                const result = await buyersUserService.agregarArchivoDelUsuarioDelComprador(
+                    crib_number,
+                    file
+                );
+
+                compensations.push(() =>
+                    buyersUserService.eliminarArchivoDelUsuarioDelComprador(result.key)
+                );
+
+                documentos_user[docType].push(result.url);
+            }
+        }
         //por todos los archivos del familiar
-        Object.entries(archivos_fam).forEach(([familyId, files]) => {
+        for (const [familyId, files] of Object.entries(archivos_fam || {})) {
             const documentos_fam_family = {};
-            Object.entries(files).forEach(([docType, files]) => {
+
+            for (const [docType, docs] of Object.entries(files)) {
                 documentos_fam_family[docType] = [];
-                files.forEach(file => {
-                    // const result = buyersUserService.agregarArchivoDelFamiliarDelComprador(file);
-                    // compensations.push(() => buyersUserService.eliminarArchivoDelFamiliarDelComprador(result.key))
-                    //aca guardar el link del archivo
-                    documentos_fam_family[docType].push(file.fieldname);
-                });
-            })
+
+                for (const file of docs) {
+                    // Si luego querés subir archivos acá, este es el lugar correcto:
+                    const result = await buyersUserService.agregarArchivoAlFamiliarDelUsuarioDelComprador(crib_number,file);
+                    compensations.push(() => buyersUserService.eliminarArchivoDelFamiliarDelComprador(result.key));
+
+                    documentos_fam_family[docType].push(result.url);
+                }
+            }
+
             documentos_fam.push(documentos_fam_family);
-            
-        });
+        }
+        //agrego los archivos del user a la data
 
-
-        console.log("archivos subidos del user")
-        console.log(documentos_user)
-        console.log("archivos subidos de los familiares")
-        console.log(documentos_fam)
+        data.documentos = documentos_user;
         
-        //falta agregar las url de los archivos
-        //para los datos de comprador
-        //para el usuario es facil para familiar, hay que agregarlo en orden
+        //agrego los archivos de los familiares a la data
+        //lo agrego segun el orden que llego
+
+        data.familiares = data?.familiares?.map((fam, index) => ({
+            ...fam,
+            documents: documentos_fam[index] || []
+        }));
 
 
-
-        const user = await buyersUserService.agregarUsuarioComprador();
+        const user = await buyersUserService.agregarUsuarioComprador(data);
         res.status(201).json(user);
     } catch (error) {
         //si falla alguna de las acciones, se ejecutan las compensaciones (como un rollback)
