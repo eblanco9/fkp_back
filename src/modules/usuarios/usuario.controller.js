@@ -5,7 +5,8 @@ import {
     agregarDiferenciasSchema,
     rechazarUsuarioSchema,
     actualizarImagenDniFrenteSchema,
-    setearOwnerSchema
+    setearOwnerSchema,
+    obtenerCantidadDeUsuariosSegunEstadoSchema
 } from './usuario.schema.js';
 import { enviarEmailDeAprobacion, enviarEmailDeRechazo } from '../../services/email.service.js';
 
@@ -71,7 +72,8 @@ const obtenerUsuarios = async (req, res, next) => {
 
 const obtenerCantidadDeUsuariosSegunEstado = async (req, res, next) => {
     try {
-        const result = await usuarioService.obtenerCantidadDeUsuariosSegunEstado();
+        const query = obtenerCantidadDeUsuariosSegunEstadoSchema.query.parse(req.query)
+        const result = await usuarioService.obtenerCantidadDeUsuariosSegunEstado(query.batch);
         res.json(result);
     } catch (err) {
         next(err);
