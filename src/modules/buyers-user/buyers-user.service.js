@@ -63,10 +63,108 @@ const eliminarArchivoDelFamiliarDelComprador = async (key) => {
     await s3Service.deleteFromS3(key)
 }
 
+const obtenerUsuariosCompradores = async (query) => {
+    const { page = 1, limit = 10 } = query;
+
+    const pageNumber = parseInt(page);
+    const pageSize = parseInt(limit);
+
+    let where = {};
+
+    const usuarios = await prisma.buyerUser.findMany({
+        where, // filtrar por estado si viene
+        select:{
+            id: true,
+            full_name: true,
+            date_of_birth: true,
+            address: true,
+            phone: true,
+            email: true,
+            lives_with_someone: true,
+            crib_number: true
+        },
+        skip: (pageNumber - 1) * pageSize,
+        take: pageSize,
+        orderBy: { created_at: "desc" }
+    });
+
+    const total = await prisma.buyerUser.count({
+        where
+    });
+
+    return {
+        page: pageNumber,
+        limit: pageSize,
+        total,
+        totalPages: Math.ceil(total / pageSize),
+        usuarios: usuarios
+    };
+}
+
+const obtenerUsuarioCompradorPorId = async (id) => {
+    const user = await prisma.buyerUser.findUnique({
+        where: {
+            id: Number(id)
+        }
+    })
+    if (!user) {
+        throw new HttpError(404, "No se encontro el usuario")
+    }
+    
+    return user
+    
+}
+
+const obtenerUsuarioCompradorPorCribNumber = async (crib_number) => {
+    const user = await prisma.buyerUser.findFirst({
+        where: {
+            crib_number
+        }
+    })
+    if (!user) {
+        throw new HttpError(404, "No se encontro el usuario")
+    }
+    
+    return user
+    
+}
+
+const aprobarUsuarioComprador = async (id_usuario) => {
+    const usuario = await obtenerUsuarioCompradorPorCribNumber(id_usuario)
+    const usuarioActualizado = await prisma.buyerUser.update({
+        where: {
+            crib_number: id_usuario
+        },
+        data: {
+            status: "approved"
+        }
+    })
+    return usuarioActualizado
+}
+
+const rechazarUsuarioComprador = async (id_usuario) => {
+    const usuario = await obtenerUsuarioCompradorPorCribNumber(id_usuario)
+    const usuarioActualizado = await prisma.buyerUser.update({
+        where: {
+            crib_number: id_usuario
+        },
+        data: {
+            status: "rejected"
+        }
+    })
+    return usuarioActualizado
+}
+
+
+
 export default { 
     agregarUsuarioComprador, 
     agregarArchivoDelUsuarioDelComprador, 
     eliminarArchivoDelUsuarioDelComprador,
     agregarArchivoAlFamiliarDelUsuarioDelComprador,
-    eliminarArchivoDelFamiliarDelComprador
+    eliminarArchivoDelFamiliarDelComprador,
+    obtenerUsuariosCompradores,
+    obtenerUsuarioCompradorPorCribNumber,
+    aprobarUsuarioComprador,
+    rechazarUsuarioComprador
 }

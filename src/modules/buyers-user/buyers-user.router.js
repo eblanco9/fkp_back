@@ -18,4 +18,24 @@ router.post(
     buyersUserController.agregarUsuarioComprador
 )
 
+router.get(
+    '/',
+    buyersUserController.obtenerUsuariosCompradores
+)
+
+router.get(
+    '/:crib_number',
+    buyersUserController.obtenerUsuarioCompradorPorCribNumber
+)
+
+router.post(
+    '/aprobar-usuario/:crib_number', 
+    buyersUserController.aprobarUsuarioComprador
+);
+
+router.post('/rechazar-usuario/:crib_number', 
+    buyersUserController.rechazarUsuarioComprador
+);
+
+
 export default router

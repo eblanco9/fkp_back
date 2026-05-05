@@ -116,6 +116,7 @@ model BuyerUser {
 
   families        Json?    // JSONB en PostgreSQL
   documents       Json?    // JSONB en PostgreSQL
+  status          String
 
   created_at       DateTime @default(now())
   updated_at       DateTime @updatedAt
