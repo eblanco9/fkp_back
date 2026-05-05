@@ -1,3 +1,4 @@
+import { enviarEmailDeAprobacionUsuarioComprador, enviarEmailDeRechazoUsuarioComprador } from "../../services/email.service.js";
 import buyersUserService from "./buyers-user.service.js";
 
 const agregarUsuarioComprador = async (req, res, next) => {
@@ -81,6 +82,58 @@ const agregarUsuarioComprador = async (req, res, next) => {
     }
 };
 
+const obtenerUsuariosCompradores = async (req, res, next) => {
+    try {
+        const data = await buyersUserService.obtenerUsuariosCompradores(req.query);
+        res.json(data);
+    } catch (error) {
+        next(error);
+    }
+};
+
+const obtenerUsuarioCompradorPorCribNumber = async (req, res, next) => {
+    try {
+        const data = await buyersUserService.obtenerUsuarioCompradorPorCribNumber(req.params.cribNumber);
+        res.json(data);
+    } catch (error) {
+        next(error);
+    }
+};
+
+const aprobarUsuarioComprador = async (req, res, next) => {
+    try {
+        const id_usuario = req.params.crib_number;
+        const usuario = await buyersUserService.obtenerUsuarioCompradorPorCribNumber(id_usuario);
+        // intento enviar email
+        await enviarEmailDeAprobacionUsuarioComprador(usuario.email, usuario.full_name)
+
+        const result = await buyersUserService.aprobarUsuarioComprador(id_usuario);
+        res.json(result);
+    } catch (err) {
+        next(err);
+    }
+};
+
+const rechazarUsuarioComprador = async (req, res, next) => {
+    try {
+        const id_usuario = req.params.crib_number;
+        const body =  req.body
+        const usuario = await buyersUserService.obtenerUsuarioCompradorPorCribNumber(id_usuario);
+        // intento enviar email
+        await enviarEmailDeRechazoUsuarioComprador(usuario.email, usuario.full_name, body.motivo)
+        
+        const result = await buyersUserService.rechazarUsuarioComprador(id_usuario);
+        res.json(result);
+    } catch (err) {
+        next(err);
+    }
+};
 
 
-export default { agregarUsuarioComprador };
+export default { 
+    agregarUsuarioComprador,
+    obtenerUsuariosCompradores,
+    obtenerUsuarioCompradorPorCribNumber,
+    aprobarUsuarioComprador,
+    rechazarUsuarioComprador
+};

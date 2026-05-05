@@ -1,6 +1,10 @@
 // services/email.service.js (o como lo llames)
 import HttpError from '../errors/httpError.js';
 import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend';
+import { 
+    approved_buyer_user_email_template,
+    rejected_buyer_user_email_template 
+} from '../email/templates/buyer-user.template.js';
 
 const mailerSend = new MailerSend({
     apiKey: process.env.MAILERSEND_API_KEY,
@@ -685,6 +689,49 @@ export const enviarEmailDeRechazo = async (email, nombre, mensaje_moderador) => 
         Destination: { ToAddresses: [email] },
         Message: {
             Subject: { Data: rejected_email_template.subject },
+            Body: { Text: { Data: text_a_enviar } },
+        },
+    };
+
+    await sendEmail(mailOptions);
+};
+
+//agrego funciones para enviar emails de aprobacion y rechazo de usuario comprador
+//puedo modificar que datos puedo reemplazar
+
+export const enviarEmailDeAprobacionUsuarioComprador = async (email, nombre) => {
+    const texto = approved_buyer_user_email_template.text.replace('[Nombre]', nombre);
+    // const html = approved_email_template.html.replace('[Nombre]', nombre);
+
+    const mailOptions = {
+        Source: DEFAULT_FROM_EMAIL,
+        Destination: { ToAddresses: [email] },
+        Message: {
+            Subject: { Data: approved_buyer_user_email_template.subject },
+            Body: {
+                Text: { Data: texto },
+                // Html: { Data: html },   // 👈 AGREGADO
+            },
+        },
+    };
+
+    await sendEmail(mailOptions);
+};
+
+export const enviarEmailDeRechazoUsuarioComprador = async (email, nombre, mensaje_moderador) => {
+    // si tenés el frontend en una env lo usás, si no, dejo un placeholder
+    const frontendHost = process.env.FRONTEND_HOST || '';
+
+    let text_a_enviar = rejected_buyer_user_email_template.text;
+    text_a_enviar = text_a_enviar.replace('[Nombre]', nombre);
+    text_a_enviar = text_a_enviar.replace('[link]', frontendHost);
+    text_a_enviar = text_a_enviar.replace('[mensaje_moderador]', mensaje_moderador || '');
+
+    const mailOptions = {
+        Source: DEFAULT_FROM_EMAIL,
+        Destination: { ToAddresses: [email] },
+        Message: {
+            Subject: { Data: rejected_buyer_user_email_template.subject },
             Body: { Text: { Data: text_a_enviar } },
         },
     };
