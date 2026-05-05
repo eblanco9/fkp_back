@@ -85,6 +85,66 @@ const getFilesToS3 = async ( modulo, dni) => {
     }
 };
 
+const uploadFileToS3Generic = async (buffer, filename, mimetype,basePath) => {
+     try {
+        const { bucket, bucketUrl, region, accessKeyId, secretAccessKey } = getS3Config();
+
+        const s3 = new S3Client({
+            region,
+            credentials: { accessKeyId, secretAccessKey },
+        });
+
+        const key = `${basePath}/${filename}`;
+
+        const command = new PutObjectCommand({
+            Bucket: bucket,
+            Key: key,
+            Body: buffer,
+            ContentType: mimetype,
+            ACL: "public-read",
+        });
+
+        await s3.send(command);
+
+        return {
+            url: `${bucketUrl}/${key}`,
+            key,
+        };
+    } catch (error) {
+        console.error("Error al subir archivo a S3:", error);
+        throw HttpError.internal();
+    }
+}
+
+const getFileToS3Generic = async ( path ) => {
+    try {
+        const { bucket, bucketUrl, region, accessKeyId, secretAccessKey } = getS3Config();
+
+        const s3 = new S3Client({
+            region,
+            credentials: { accessKeyId, secretAccessKey },
+        });
+
+        const command = new ListObjectsV2Command({
+            Bucket: bucket,
+            Prefix: path,
+        });
+
+        const respuesta = await s3.send(command);
+        const archivos = respuesta.Contents || [];
+
+        return archivos.map((archivo) => ({
+            key: archivo.Key,
+            name: path.basename(archivo.Key),
+            url: `${bucketUrl}/${archivo.Key}`,
+            size: archivo.Size,
+            lastModified: archivo.LastModified,
+        }));
+    } catch (error) {
+        console.error("Error al obtener archivos de S3:", error);
+        throw HttpError.internal()
+    }
+};
 const deleteFromS3 = async (key) => {
     try {
         const { bucket, region, accessKeyId, secretAccessKey } = getS3Config();
@@ -132,4 +192,4 @@ const deleteFromS3 = async (key) => {
     }
 };
 
-export default { uploadToS3, getFilesToS3, deleteFromS3 };
+export default { uploadToS3, getFilesToS3, deleteFromS3, uploadFileToS3Generic, getFileToS3Generic };
