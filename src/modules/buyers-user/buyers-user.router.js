@@ -37,5 +37,10 @@ router.post('/rechazar-usuario/:crib_number',
     buyersUserController.rechazarUsuarioComprador
 );
 
+router.get(
+    '/estadisticas/usuarios-por-estado',
+    buyersUserController.obtenerCantidadDeUsuariosPorEstado
+)
+
 
 export default router

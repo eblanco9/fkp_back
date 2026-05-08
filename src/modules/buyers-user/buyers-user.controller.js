@@ -92,7 +92,7 @@ const obtenerUsuariosCompradores = async (req, res, next) => {
 
 const obtenerUsuarioCompradorPorCribNumber = async (req, res, next) => {
     try {
-        const data = await buyersUserService.obtenerUsuarioCompradorPorCribNumber(req.params.cribNumber);
+        const data = await buyersUserService.obtenerUsuarioCompradorPorCribNumber(req.params.crib_number);
         res.json(data);
     } catch (error) {
         next(error);
@@ -128,11 +128,22 @@ const rechazarUsuarioComprador = async (req, res, next) => {
     }
 };
 
+const obtenerCantidadDeUsuariosPorEstado = async (req, res, next) => {
+    try {
+        const data = await buyersUserService.obtenerCantidadDeUsuariosPorEstado();
+        res.json(data);
+    } catch (error) {
+        next(error);
+    }
+};
+
 
 export default { 
     agregarUsuarioComprador,
     obtenerUsuariosCompradores,
     obtenerUsuarioCompradorPorCribNumber,
     aprobarUsuarioComprador,
-    rechazarUsuarioComprador
+    rechazarUsuarioComprador,
+    obtenerCantidadDeUsuariosPorEstado
+
 };
