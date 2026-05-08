@@ -6,15 +6,14 @@ const agregarUsuarioComprador = async (req, res, next) => {
     try {
         const archivos_user = req.parsedFiles.user;
         const data = JSON.parse(req.body.payload);
-        console.log(data);
+
         const crib_number = data?.persona?.cribNumber;
         if(!crib_number){
             return res.status(400).json({ message: "cribNumber es requerido" });
         }
-        console.log(crib_number);
         const archivos_fam = req.parsedFiles.families || {};
 
-        const documentos_user = [];
+        const documentos_user = {};
         const documentos_fam = [];
         //por todos los archivos del user
         for (const [docType, files] of Object.entries(archivos_user)) {
@@ -53,7 +52,7 @@ const agregarUsuarioComprador = async (req, res, next) => {
         }
         //agrego los archivos del user a la data
 
-        data.documentos = documentos_user;
+        data.documents = documentos_user;
         
         //agrego los archivos de los familiares a la data
         //lo agrego segun el orden que llego

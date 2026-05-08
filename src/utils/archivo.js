@@ -6,6 +6,8 @@ export function obtenerExtensionArchivo(file) {
       return 'png';
     case 'image/webp':
       return 'webp';
+    case 'application/pdf':
+      return 'pdf';
     default:
       return null; // tipo no permitido
   }
