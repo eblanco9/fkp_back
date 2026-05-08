@@ -1,4 +1,5 @@
 
+import { es } from 'zod/locales';
 import HttpError from '../../errors/httpError.js';
 import prisma from '../../prisma-client.js';
 import s3Service from '../../services/s3.service.js';
@@ -67,16 +68,21 @@ const eliminarArchivoDelFamiliarDelComprador = async (key) => {
 }
 
 const obtenerUsuariosCompradores = async (query) => {
-    const { page = 1, limit = 10 } = query;
+    const { page = 1, limit = 10, estado } = query;
 
     const pageNumber = parseInt(page);
     const pageSize = parseInt(limit);
 
     let where = {};
 
+    // filtro por estado si viene en query
+    if (estado) {
+        where.status = estado.trim().toLowerCase();
+    }
+
     const usuarios = await prisma.buyerUser.findMany({
-        where, // filtrar por estado si viene
-        select:{
+        where,
+        select: {
             id: true,
             full_name: true,
             date_of_birth: true,
@@ -100,9 +106,9 @@ const obtenerUsuariosCompradores = async (query) => {
         limit: pageSize,
         total,
         totalPages: Math.ceil(total / pageSize),
-        usuarios: usuarios
+        usuarios
     };
-}
+};
 
 const obtenerUsuarioCompradorPorId = async (id) => {
     const user = await prisma.buyerUser.findUnique({
@@ -145,6 +151,28 @@ const aprobarUsuarioComprador = async (id_usuario) => {
     return usuarioActualizado
 }
 
+const obtenerCantidadDeUsuariosPorEstado = async () => {
+    const usuariosPorEstado = await prisma.buyerUser.groupBy({
+        by: ['status'],
+        _count: {
+            status: true
+        }
+    });
+
+    // estados base (los que querés siempre)
+    const resultado = {
+        pending: 0,
+        approved: 0,
+        rejected: 0
+    };
+
+    usuariosPorEstado.forEach(item => {
+        resultado[item.status] = item._count.status;
+    });
+
+    return resultado;
+};
+
 const rechazarUsuarioComprador = async (id_usuario) => {
     const usuario = await obtenerUsuarioCompradorPorCribNumber(id_usuario)
     const usuarioActualizado = await prisma.buyerUser.update({
@@ -169,5 +197,6 @@ export default {
     obtenerUsuariosCompradores,
     obtenerUsuarioCompradorPorCribNumber,
     aprobarUsuarioComprador,
-    rechazarUsuarioComprador
+    rechazarUsuarioComprador,
+    obtenerCantidadDeUsuariosPorEstado
 }
