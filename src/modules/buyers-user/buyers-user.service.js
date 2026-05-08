@@ -22,10 +22,13 @@ const agregarUsuarioComprador = async (datos) => {
 
     const buyerUserData = extractBuyerUserData(datos);
 
+    
+
     const finalData =  {
         ...buyerUserData,
+        status: "pending",
         families: datos.familiares,
-        documents: datos.documentos
+        documents: datos.documents
     }
 
     const user = await prisma.buyerUser.create({ data: finalData });
