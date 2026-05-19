@@ -4,6 +4,7 @@ import usuarioRouter from './modules/usuarios/usuario.router.js';
 import historialRouter from './modules/historial/historial.router.js';
 import authRouter from './modules/auth/auth.router.js'
 import userAdminRouter from './modules/user-admin/user-admin.router.js'
+import buyersUserRouter from './modules/buyers-user/buyers-user.router.js'
 import cors from 'cors';
 
 const app = express();
@@ -29,6 +30,7 @@ app.get('/', (req, res) => {
 app.use('/api/usuarios', usuarioRouter);
 app.use('/auth',authRouter)
 app.use('/api/user-admin',userAdminRouter)
+app.use('/api/buyers-user', buyersUserRouter)
 // app.use('/api/historial',historialRouter)
 
 //error handle

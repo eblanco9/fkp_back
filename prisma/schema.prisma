@@ -43,6 +43,7 @@ model Users {
   origin              String?
   documentFrontImage  String?
   documentBackImage   String?
+  batch               Int? //sirve para identificar a los user por lote
   status              Estado?                 @default(pending)
   createdAt           DateTime                @default(now())
   updatedAt           DateTime                @updatedAt
@@ -101,3 +102,24 @@ model UserAdmin {
   role                UserAdminRole           @default(admin)
 }
 
+model BuyerUser {
+  id              Int      @id @default(autoincrement())
+  full_name        String
+  date_of_birth     DateTime
+  address         String
+  phone           String?
+  email           String?  @unique
+
+  crib_number      String?  @unique
+
+  lives_with_someone Boolean  @default(false)
+
+  families        Json?    // JSONB en PostgreSQL
+  documents       Json?    // JSONB en PostgreSQL
+  status          String
+
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  @@map("buyer_users")
+}
